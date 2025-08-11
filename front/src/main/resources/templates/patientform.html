@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${pageTitle} + ' - Medilabo Solutions'">
+      Formulaire Patient - Medilabo Solutions
+    </title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <!-- Messages d'alerte -->
+    <div th:if="${error}" class="alert alert-danger">
+      <strong>Erreur :</strong> <span th:text="${error}">Erreur</span>
+    </div>
+
+    <!-- Formulaire Patient -->
+    <div class="w-75 mx-auto mb-4 mt-5">
+      <h2
+        class="mb-3"
+        th:text="${isEdit ? 'Modifier le patient' : 'Ajouter un nouveau patient'}"
+      >
+        Formulaire Patient
+      </h2>
+
+      <form th:action="@{/patient/save}" method="post" th:object="${patient}">
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <tr>
+              <th width="30%">Prénom *</th>
+              <td>
+                <input
+                  type="text"
+                  th:field="*{firstname}"
+                  class="form-control"
+                  required
+                />
+                <div
+                  th:if="${#fields.hasErrors('firstname')}"
+                  class="text-danger mt-1"
+                  th:errors="*{firstname}"
+                ></div>
+              </td>
+            </tr>
+
+            <tr>
+              <th>Nom *</th>
+              <td>
+                <input
+                  type="text"
+                  th:field="*{lastname}"
+                  class="form-control"
+                  required
+                />
+                <div
+                  th:if="${#fields.hasErrors('lastname')}"
+                  class="text-danger mt-1"
+                  th:errors="*{lastname}"
+                ></div>
+              </td>
+            </tr>
+
+            <tr>
+              <th>Date de naissance *</th>
+              <td>
+                <input
+                  type="date"
+                  name="birthDate"
+                  th:value="${patient.birthDate != null ? patient.birthDate : ''}"
+                  class="form-control"
+                  required
+                />
+                <div
+                  th:if="${#fields.hasErrors('birthDate')}"
+                  class="text-danger mt-1"
+                  th:errors="*{birthDate}"
+                ></div>
+              </td>
+            </tr>
+
+            <tr>
+              <th>Genre *</th>
+              <td>
+                <select th:field="*{gender}" class="form-select" required>
+                  <option value="">Choisir</option>
+                  <option value="M">Masculin</option>
+                  <option value="F">Féminin</option>
+                </select>
+                <div
+                  th:if="${#fields.hasErrors('gender')}"
+                  class="text-danger mt-1"
+                  th:errors="*{gender}"
+                ></div>
+              </td>
+            </tr>
+
+            <tr>
+              <th>Téléphone</th>
+              <td>
+                <input
+                  type="tel"
+                  th:field="*{phoneNumber}"
+                  class="form-control"
+                  placeholder="Ex: 0123456789"
+                />
+                <div
+                  th:if="${#fields.hasErrors('phoneNumber')}"
+                  class="text-danger mt-1"
+                  th:errors="*{phoneNumber}"
+                ></div>
+              </td>
+            </tr>
+
+            <tr>
+              <th>Adresse</th>
+              <td>
+                <input
+                  type="text"
+                  th:field="*{address}"
+                  class="form-control"
+                  placeholder="Adresse complète"
+                />
+                <div
+                  th:if="${#fields.hasErrors('address')}"
+                  class="text-danger mt-1"
+                  th:errors="*{address}"
+                ></div>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="2" class="text-center pt-3">
+                <button
+                  type="submit"
+                  class="btn btn-primary me-2"
+                  th:text="${isEdit ? 'Modifier' : 'Créer'}"
+                >
+                  Enregistrer
+                </button>
+                <a href="/home" class="btn btn-secondary">Annuler</a>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </form>
+
+      <p class="text-muted mt-3"><small>* Champs obligatoires</small></p>
+    </div>
+  </body>
+</html>
