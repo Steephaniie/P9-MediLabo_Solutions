@@ -28,7 +28,7 @@
         Formulaire Patient
       </h2>
 
-      <form th:action="@{/patient/save}" method="post" th:object="${patient}">
+      <form th:action="@{/front/patient/save}" method="post" th:object="${patient}">
         <input type="hidden" th:field="*{id}" />
 
         <div class="table-responsive">
@@ -144,7 +144,7 @@
                 >
                   Enregistrer
                 </button>
-                <a href="/home" class="btn btn-secondary">Annuler</a>
+                <a href="/front/home" class="btn btn-secondary">Annuler</a>
               </td>
             </tr>
           </table>

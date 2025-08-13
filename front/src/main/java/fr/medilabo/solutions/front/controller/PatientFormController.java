@@ -1,6 +1,7 @@
 package fr.medilabo.solutions.front.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,6 +25,8 @@ public class PatientFormController {
 
     @Autowired
     private GatewayServiceClient gatewayServiceClient;
+    @Value("${app.gateway.url:http://localhost:8080}")
+    private String gatewayUrl;
 
 
     /**
@@ -36,7 +39,7 @@ public class PatientFormController {
      * @param model l'objet Spring Model utilisé pour passer les attributs à la vue
      * @return le nom du template de vue "patient-form" à afficher
      */
-    @GetMapping("/patient/new")
+    @GetMapping("/front/patient/new")
     public String showNewPatientForm(Model model) {
         PatientDto patient = new PatientDto();
         model.addAttribute("patient", patient);
@@ -63,7 +66,7 @@ public class PatientFormController {
      * En cas de succès, retourne la vue "patient-form". En cas d'erreur, enregistre l'exception
      * et redirige vers "/home" avec un message d'erreur.
      */
-    @GetMapping("/patient/{id}/edit")
+    @GetMapping("/front/patient/{id}/edit")
     public String showEditPatientForm(@PathVariable("id") Long patientId, Model model) {
         try {
             PatientDto patient = gatewayServiceClient.getPatientById(patientId);
@@ -74,7 +77,7 @@ public class PatientFormController {
         } catch (Exception e) {
             logger.error("Error loading patient {} for editing: {}", patientId, e.getMessage());
             model.addAttribute("error", "Erreur lors du chargement du patient");
-            return "redirect:/home";
+            return "redirect:"+gatewayUrl+"/front/home";
         }
         return "patientform";
     }
@@ -105,7 +108,7 @@ public class PatientFormController {
      * - Enregistre les résultats de l'opération
      * - Redirige vers la page d'accueil en cas de succès ou retourne au formulaire en cas d'erreur
      */
-    @PostMapping("/patient/save")
+    @PostMapping("/front/patient/save")
     public String savePatient(@Valid @ModelAttribute("patient") PatientDto patientDto,
             BindingResult bindingResult,
             Model model,
@@ -129,8 +132,7 @@ public class PatientFormController {
                 redirectAttributes.addFlashAttribute("success", "Patient créé avec succès");
                 logger.info("Successfully created new patient with ID {}", savedPatient.getId());
             }
-
-            return "redirect:/home";
+            return "redirect:" + gatewayUrl + "/front/home";
 
         } catch (Exception e) {
             logger.error("Error saving patient: {}", e.getMessage());

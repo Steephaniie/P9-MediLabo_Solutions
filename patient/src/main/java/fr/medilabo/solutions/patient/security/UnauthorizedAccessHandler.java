@@ -1,10 +1,10 @@
-package fr.medilabo.solutions.front.security;
+package fr.medilabo.solutions.patient.security;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -13,25 +13,16 @@ import java.io.IOException;
 
 /**
  * Point d'entrée d'authentification JWT qui gère les tentatives d'accès non autorisées.
- *
+ * <p>
  * Cette classe est appelée lorsqu'un utilisateur tente d'accéder à une ressource protégée
  * sans être authentifié ou avec un token JWT invalide.
  */
 @Component
-public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public class UnauthorizedAccessHandler implements AuthenticationEntryPoint {
 
-    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationEntryPoint.class);
-
-    /**
-     * Détermine si la requête est une requête API.
-     *
-     * @param request la requête HTTP
-     * @return vrai si c'est une requête API, faux sinon
-     */
-    private boolean isApiRequest(HttpServletRequest request) {
-        String requestURI = request.getRequestURI();
-        return requestURI.startsWith("/api/");
-    }
+    private static final Logger logger = LoggerFactory.getLogger(UnauthorizedAccessHandler.class);
+    @Value("${app.gateway.url:http://localhost:8080}")
+    private String gatewayUrl;
 
     /**
      * Méthode appelée lorsqu'une exception d'authentification est levée.
@@ -41,22 +32,14 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
      * @param response      la réponse HTTP
      * @param authException l'exception d'authentification qui a été levée
      * @throws IOException      en cas d'erreur d'E/S
-     * @throws ServletException en cas d'erreur de servlet
      */
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
-            AuthenticationException authException) throws IOException, ServletException {
-
+                         AuthenticationException authException) throws IOException {
         String requestURI = request.getRequestURI();
         String method = request.getMethod();
-
         logger.warn("Unauthorized access to {} {} - {}", method, requestURI, authException.getMessage());
+        response.sendRedirect(gatewayUrl+"/front/login");
 
-        // For API requests, return JSON
-        if (isApiRequest(request)) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        } else {
-            response.sendRedirect("/login");
-        }
     }
 }

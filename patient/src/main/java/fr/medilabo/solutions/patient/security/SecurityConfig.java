@@ -1,4 +1,4 @@
-package fr.medilabo.solutions.front.security;
+package fr.medilabo.solutions.patient.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
 /**
  * Classe de configuration de sécurité pour le framework Spring Security.
@@ -49,7 +48,6 @@ public class SecurityConfig {
     @Value("${app.gateway.url:http://localhost:8080}")
     private String gatewayUrl;
 
-//    SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
 
     /**
      * Configuration principale de la chaîne de filtres de sécurité.
@@ -63,10 +61,9 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/front/login", "/front/logout", "/front/actuator/**").permitAll()
                         .anyRequest().authenticated())
                 .logout(logout -> logout
-                        .logoutUrl("/front/logout")
+                        .logoutUrl("/logout")
                         .logoutSuccessUrl(gatewayUrl+"/front/login?logout") // Redirection après déconnexion
                         .deleteCookies("jwt"))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -97,7 +94,7 @@ public class SecurityConfig {
         UserDetails admin = User.builder()
                 .username("stef")
                 .password(passwordEncoder().encode("stef"))
-                .roles("USER")
+                .roles("USER", "ADMIN")
                 .build();
 
         return new InMemoryUserDetailsManager(admin);

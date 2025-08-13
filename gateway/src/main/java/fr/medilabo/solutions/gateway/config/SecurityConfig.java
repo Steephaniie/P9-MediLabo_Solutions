@@ -3,7 +3,6 @@ package fr.medilabo.solutions.gateway.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
@@ -36,8 +35,7 @@ import org.springframework.security.web.server.authorization.ServerAccessDeniedH
 public class SecurityConfig {
 
     @Autowired
-    private ServerAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
+    private UnauthorizedAccessHandler unauthorizedAccessHandler;
     @Autowired
     private JwtValidationFilter jwtValidationFilter;
 
@@ -49,25 +47,18 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-
-        ServerAccessDeniedHandler accessDeniedRedirect = (ServerAccessDeniedHandler) (exchange, denied) -> {
-            exchange.getResponse().setStatusCode(HttpStatus.SEE_OTHER);
-            exchange.getResponse().getHeaders()
-                    .set(HttpHeaders.LOCATION, "http://localhost:8084/home");
-            return exchange.getResponse().setComplete();
-        };
-
         return http
                 .csrf(csrf -> csrf.disable())
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+                .logout(ServerHttpSecurity.LogoutSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/actuator/**").permitAll()
-                        .pathMatchers("/api/**").authenticated())
+                        .pathMatchers("/api/**").authenticated()  // Seulement les API sont protégées
+                        .anyExchange().permitAll())               // Tout le reste est libre
                 .exceptionHandling(exceptionHandlingSpec -> exceptionHandlingSpec
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                        .accessDeniedHandler(accessDeniedRedirect))
+                        .authenticationEntryPoint(unauthorizedAccessHandler))
                 .addFilterAt(jwtValidationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
-    }
+}
 }

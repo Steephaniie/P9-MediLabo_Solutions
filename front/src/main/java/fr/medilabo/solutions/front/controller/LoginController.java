@@ -1,6 +1,7 @@
 package fr.medilabo.solutions.front.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -19,6 +20,7 @@ import fr.medilabo.solutions.front.util.JwtUtil;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,13 +45,16 @@ public class LoginController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Value("${app.gateway.url:http://localhost:8080}")
+    private String gatewayUrl;
+
     /**
      * Affiche la page de connexion.
      *
      * @param model le modèle Spring MVC
      * @return le nom de la vue de connexion
      */
-    @GetMapping("/login")
+    @GetMapping("/front/login")
     public String showLoginPage(Model model) {
         model.addAttribute("loginRequest", new LoginRequest());
         return "login";
@@ -65,11 +70,12 @@ public class LoginController {
      * @param redirectAttributes les attributs de redirection
      * @return redirection vers la page d'accueil ou retour à la page de connexion
      */
-    @PostMapping("/login")
+    @PostMapping("/front/login")
     public String authenticate(@Valid @ModelAttribute("loginRequest") LoginRequest loginRequest,
             BindingResult bindingResult,
             Model model,
             HttpServletResponse response,
+            HttpServletRequest request,  // Ajouter HttpServletRequest
             RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
@@ -81,24 +87,20 @@ public class LoginController {
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
-
             String jwt = jwtUtil.generateToken(userDetails);
-
             Cookie jwtCookie = new Cookie("jwt", jwt);
             jwtCookie.setHttpOnly(true); 
             jwtCookie.setSecure(false);
             jwtCookie.setPath("/");
-
             response.addCookie(jwtCookie);
 
             log.info("User '{}' logged in successfully", loginRequest.getUsername());
-
             redirectAttributes.addFlashAttribute("success", "Connexion réussie !");
-            return "redirect:/home";
+
+            return "redirect:" + gatewayUrl + "/front/home";
 
         } catch (AuthenticationException e) {
-            log.warn("Authentication failed for user '{}': {}",
-                    loginRequest.getUsername(), e.getMessage());
+            log.warn("Authentication failed for user '{}': {}", loginRequest.getUsername(), e.getMessage());
             model.addAttribute("error", "Nom d'utilisateur ou mot de passe incorrect");
             return "login";
         }

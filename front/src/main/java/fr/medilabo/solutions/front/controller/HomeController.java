@@ -40,7 +40,7 @@ public class HomeController {
      * @throws Exception si une erreur survient lors de la récupération des patients
      *                   depuis le service gateway
      */
-    @GetMapping("/home")
+    @GetMapping("/front/home")
     @Cacheable(value = "patient")
     public String home(Model model) {
         // Affichage du contenu du cache

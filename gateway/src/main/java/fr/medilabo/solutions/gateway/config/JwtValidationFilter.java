@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -30,8 +31,6 @@ import reactor.core.publisher.Mono;
  * <ul>
  * <li>Extrait le jeton JWT du cookie "jwt"</li>
  * <li>Valide le jeton en utilisant {@link JwtValidatorUtil}</li>
- * <li>Vérifie que la requête provient du frontend en utilisant un en-tête
- * personnalisé</li>
  * <li>Si valide, définit le contexte de sécurité avec un {@code ROLE_USER}</li>
  * <li>Si invalide, redirige l'utilisateur vers la page de connexion</li>
  * </ul>
@@ -47,7 +46,8 @@ public class JwtValidationFilter implements WebFilter {
 
     private static final Logger log = LoggerFactory.getLogger(JwtValidationFilter.class);
 
-    private static final String INTERNAL_HEADER = "X-Internal-Front";
+    @Value("${app.gateway.url:http://localhost:8080}")
+    private String gatewayUrl;
 
     @Autowired
     private JwtValidatorUtil jwtValidator;
@@ -66,14 +66,18 @@ public class JwtValidationFilter implements WebFilter {
         ServerHttpRequest req = exchange.getRequest();
         String path = req.getURI().getPath();
 
+        // Exclure les routes d'authentification de la validation JWT
+        if (isAuthenticationPath(path)) {
+            log.debug("Skipping JWT validation for authentication path: {}", path);
+            return chain.filter(exchange);
+        }
+
         String jwt = extractJwtFromCookies(req);
         if (jwt != null) {
 
-            if (jwtValidator.isValid(jwt) && isFromFront(req)) {
-                log.info("Valid JWT signature for request: {}", path);
-
+            if (jwtValidator.isValid(jwt) ) {
                 String username = jwtValidator.extractClaim(jwt, "sub");
-
+                log.info("JWT valide pour `{}`", username);
                 var auth = new UsernamePasswordAuthenticationToken(
                         username,
                         null,
@@ -86,11 +90,23 @@ public class JwtValidationFilter implements WebFilter {
             }
 
             log.warn("Invalid JWT signature for request: {}", path);
-            return redirect(exchange, "http://localhost:8084/login");
+            return redirect(exchange, gatewayUrl+"/front/login");
         }
 
         log.warn("No JWT token found in cookies for request: {}", path);
         return chain.filter(exchange);
+    }
+
+    /**
+     * Vérifie si le chemin correspond à une route d'authentification.
+     *
+     * @param path le chemin de la requête
+     * @return true si c'est une route d'authentification
+     */
+    private boolean isAuthenticationPath(String path) {
+        return path.startsWith("/login") || 
+           path.startsWith("/auth/") || 
+           path.startsWith("/actuator/");
     }
 
     /**
@@ -103,17 +119,6 @@ public class JwtValidationFilter implements WebFilter {
         return req.getCookies().getFirst("jwt") != null
                 ? req.getCookies().getFirst("jwt").getValue()
                 : null;
-    }
-
-    /**
-     * Vérifie si la requête provient du frontend.
-     *
-     * @param req la {@link ServerHttpRequest} courante
-     * @return {@code true} si l'en-tête interne est présent, {@code false}
-     *         sinon
-     */
-    private boolean isFromFront(ServerHttpRequest req) {
-        return req.getHeaders().containsKey(INTERNAL_HEADER);
     }
 
     /**

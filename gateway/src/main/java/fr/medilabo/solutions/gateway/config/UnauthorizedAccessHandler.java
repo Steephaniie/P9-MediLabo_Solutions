@@ -1,5 +1,6 @@
 package fr.medilabo.solutions.gateway.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -30,9 +31,12 @@ import reactor.core.publisher.Mono;
  * </p>
  */
 @Component
-public class JwtAuthenticationEntryPoint implements ServerAuthenticationEntryPoint {
+public class UnauthorizedAccessHandler implements ServerAuthenticationEntryPoint {
 
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(JwtAuthenticationEntryPoint.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UnauthorizedAccessHandler.class);
+
+    @Value("${app.gateway.url:http://localhost:8080}")
+    private String gatewayUrl;
 
     /**
      * Détermine si la requête cible un point d'accès API.
@@ -75,7 +79,7 @@ public class JwtAuthenticationEntryPoint implements ServerAuthenticationEntryPoi
         }
 
         log.info("Redirecting to home page for unauthorized access from front: {}", path);
-        return redirect(exchange, "http://localhost:8084/home");
+        return redirect(exchange, gatewayUrl+"/front/home");
     }
 
     /**
