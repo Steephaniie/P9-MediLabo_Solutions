@@ -1,6 +1,8 @@
 package fr.medilabo.solutions.front.controller;
 
+import fr.medilabo.solutions.front.client.PatientServiceClient;
 import fr.medilabo.solutions.front.dto.PatientDto;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,23 +11,18 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import fr.medilabo.solutions.front.client.GatewayServiceClient;
-import fr.medilabo.solutions.front.dto.PatientPageDto;
 
 import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
 public class HomeController {
 
     private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 
-    @Autowired
-    private GatewayServiceClient gatewayServiceClient;
+    private final PatientServiceClient patientServiceClient;
 
-    @Autowired
-    private CacheManager cacheManager;
+    private final CacheManager cacheManager;
 
     /**
      * Gère les requêtes GET vers l'endpoint "/home" et affiche une liste paginée
@@ -40,21 +37,10 @@ public class HomeController {
      * @throws Exception si une erreur survient lors de la récupération des patients
      *                   depuis le service gateway
      */
-    @GetMapping("/front/home")
-    @Cacheable(value = "patient")
+    @GetMapping("home")
     public String home(Model model) {
-        // Affichage du contenu du cache
-        if (cacheManager != null) {
-            org.springframework.cache.Cache cache = cacheManager.getCache("patient");
-            if (cache != null) {
-                logger.debug("Cache 'patient' est présent : {}", cache.getName());
-                logger.debug("Cache natif : {}", cache.getNativeCache());
-            } else {
-                logger.debug("Cache 'patient' non trouvé");
-            }
-        }
         try {
-            List<PatientDto> patientPageDto = gatewayServiceClient.getAllPatients();
+            List<PatientDto> patientPageDto = patientServiceClient.getAllPatients();
             model.addAttribute("patients", patientPageDto);
             logger.info("Successfully with {} patients", patientPageDto.size());
         } catch (Exception e) {

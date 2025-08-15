@@ -1,5 +1,6 @@
 package fr.medilabo.solutions.front.security;
 
+import fr.medilabo.solutions.front.config.UrlConfiguration;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -20,10 +21,13 @@ import java.io.IOException;
 @Component
 public class UnauthorizedAccessHandler implements AuthenticationEntryPoint {
 
-    @Value("${app.gateway.url:http://localhost:8080}")
-    private String gatewayUrl;
-
     private static final Logger logger = LoggerFactory.getLogger(UnauthorizedAccessHandler.class);
+    private final UrlConfiguration urlConfiguration;
+
+    public UnauthorizedAccessHandler(UrlConfiguration urlConfiguration) {
+        this.urlConfiguration = urlConfiguration;
+    }
+
     /**
      * Méthode appelée lorsqu'une exception d'authentification est levée.
      *
@@ -39,7 +43,7 @@ public class UnauthorizedAccessHandler implements AuthenticationEntryPoint {
         String requestURI = request.getRequestURI();
         String method = request.getMethod();
         logger.warn("Unauthorized access to {} {} - {}", method, requestURI, authException.getMessage());
-        response.sendRedirect(gatewayUrl+"/front/login");
+        response.sendRedirect(urlConfiguration.getUrlSitePublic()+"/login");
 
     }
 }

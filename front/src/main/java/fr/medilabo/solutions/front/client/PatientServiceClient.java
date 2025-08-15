@@ -1,20 +1,16 @@
 package fr.medilabo.solutions.front.client;
 
-import java.util.List;
-
+import fr.medilabo.solutions.front.dto.PatientDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import fr.medilabo.solutions.front.config.FrontFeignConfig;
-import fr.medilabo.solutions.front.dto.PatientDto;
-import fr.medilabo.solutions.front.dto.PatientPageDto;
+import java.util.List;
 
-@FeignClient(name = "gateway", configuration = FrontFeignConfig.class)
-public interface GatewayServiceClient {
+@FeignClient(name = "patient")
+public interface PatientServiceClient {
 
     @GetMapping("/api/patient")
     List<PatientDto> getAllPatients();

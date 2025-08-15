@@ -1,5 +1,6 @@
 package fr.medilabo.solutions.front.security;
 
+import fr.medilabo.solutions.front.config.UrlConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
 /**
  * Classe de configuration de sécurité pour le framework Spring Security.
@@ -46,10 +47,6 @@ public class SecurityConfig {
 
     @Autowired
     private UnauthorizedAccessHandler unauthorizedAccessHandler;
-    @Value("${app.gateway.url:http://localhost:8080}")
-    private String gatewayUrl;
-
-//    SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
 
     /**
      * Configuration principale de la chaîne de filtres de sécurité.
@@ -59,19 +56,18 @@ public class SecurityConfig {
      * @throws Exception en cas d'erreur de configuration
      */
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, UrlConfiguration urlConfiguration) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/front/login", "/front/logout", "/front/actuator/**").permitAll()
+                        .requestMatchers("/login").permitAll()
                         .anyRequest().authenticated())
                 .logout(logout -> logout
-                        .logoutUrl("/front/logout")
-                        .logoutSuccessUrl(gatewayUrl+"/front/login?logout") // Redirection après déconnexion
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl(urlConfiguration.getUrlSitePublic()+"/login?logout") // Redirection après déconnexion
                         .deleteCookies("jwt"))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(unauthorizedAccessHandler));
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(unauthorizedAccessHandler))
+                .csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
 
@@ -94,13 +90,13 @@ public class SecurityConfig {
      */
     @Bean
     public UserDetailsService userDetailsService() {
-        UserDetails admin = User.builder()
+        UserDetails user = User.builder()
                 .username("stef")
                 .password(passwordEncoder().encode("stef"))
                 .roles("USER")
                 .build();
 
-        return new InMemoryUserDetailsManager(admin);
+        return new InMemoryUserDetailsManager(user);
     }
 
     /**

@@ -1,5 +1,14 @@
 package fr.medilabo.solutions.front.controller;
 
+import fr.medilabo.solutions.front.config.UrlConfiguration;
+import fr.medilabo.solutions.front.dto.LoginRequest;
+import fr.medilabo.solutions.front.security.JwtUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,16 +22,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import fr.medilabo.solutions.front.dto.LoginRequest;
-import fr.medilabo.solutions.front.util.JwtUtil;
-
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Contrôleur gérant l'authentification des utilisateurs et la génération des jetons JWT.
@@ -34,19 +35,14 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Controller
 @Slf4j
+@RequiredArgsConstructor
+@RequestMapping("login")
 public class LoginController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @Value("${app.gateway.url:http://localhost:8080}")
-    private String gatewayUrl;
+    private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
+    private final JwtUtil jwtUtil;
+    private final UrlConfiguration urlConfiguration;
 
     /**
      * Affiche la page de connexion.
@@ -54,7 +50,7 @@ public class LoginController {
      * @param model le modèle Spring MVC
      * @return le nom de la vue de connexion
      */
-    @GetMapping("/front/login")
+    @GetMapping()
     public String showLoginPage(Model model) {
         model.addAttribute("loginRequest", new LoginRequest());
         return "login";
@@ -70,24 +66,24 @@ public class LoginController {
      * @param redirectAttributes les attributs de redirection
      * @return redirection vers la page d'accueil ou retour à la page de connexion
      */
-    @PostMapping("/front/login")
+    @PostMapping()
     public String authenticate(@Valid @ModelAttribute("loginRequest") LoginRequest loginRequest,
             BindingResult bindingResult,
             Model model,
             HttpServletResponse response,
-            HttpServletRequest request,  // Ajouter HttpServletRequest
             RedirectAttributes redirectAttributes) {
-
         if (bindingResult.hasErrors()) {
             return "login";
         }
 
         try {
+            // on test le login et le mot de passe
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-
             UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
+            // on a reconnu le user --> on créer le jeton JWT
             String jwt = jwtUtil.generateToken(userDetails);
+            // on stocke le jeton dans un cookie
             Cookie jwtCookie = new Cookie("jwt", jwt);
             jwtCookie.setHttpOnly(true); 
             jwtCookie.setSecure(false);
@@ -97,7 +93,7 @@ public class LoginController {
             log.info("User '{}' logged in successfully", loginRequest.getUsername());
             redirectAttributes.addFlashAttribute("success", "Connexion réussie !");
 
-            return "redirect:" + gatewayUrl + "/front/home";
+            return "redirect:" +urlConfiguration.getUrlSitePublic()+"/home";
 
         } catch (AuthenticationException e) {
             log.warn("Authentication failed for user '{}': {}", loginRequest.getUsername(), e.getMessage());

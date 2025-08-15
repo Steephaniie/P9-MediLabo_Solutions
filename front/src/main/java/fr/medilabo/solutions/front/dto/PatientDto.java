@@ -1,13 +1,9 @@
 package fr.medilabo.solutions.front.dto;
 
-import java.time.LocalDate;
-
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
+
+import java.time.LocalDate;
 
 @Data
 public class PatientDto {
@@ -36,7 +32,7 @@ public class PatientDto {
     @Size(max = 255, message = "L'adresse ne peut pas dépasser 255 caractères")
     private String address;
 
-    @Pattern(regexp = "^(\\+33|0)[1-9]([0-9]{8})$", message = "Le numéro de téléphone doit être au format français valide")
+    @Pattern(regexp = "^(\\+33|0)[1-9]([0-9]{8})$", message = "Le numéro de téléphone doit être valide")
     private String phoneNumber;
 
 }

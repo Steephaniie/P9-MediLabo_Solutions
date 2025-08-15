@@ -1,9 +1,10 @@
 package fr.medilabo.solutions.front.security;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +15,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import fr.medilabo.solutions.front.util.JwtUtil;
-
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Filtre d'authentification JWT qui extrait et valide les jetons JWT des cookies.
@@ -39,23 +36,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * Traite la requête entrante pour extraire et valider le jeton JWT des cookies.
      * Configure le contexte d'authentification si le jeton est valide.
      *
-     * @param request la requête HTTP servlet
-     * @param response la réponse HTTP servlet
+     * @param request     la requête HTTP servlet
+     * @param response    la réponse HTTP servlet
      * @param filterChain la chaîne de filtres pour continuer le traitement
      * @throws ServletException si une erreur de servlet survient
-     * @throws IOException si une erreur d'E/S survient
+     * @throws IOException      si une erreur d'E/S survient
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain)
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
             throws ServletException, IOException {
 
         final String requestURI = request.getRequestURI();
-
         String jwt = extractJwtFromCookies(request);
         String username = null;
-
         if (jwt != null) {
             try {
                 username = jwtUtil.extractUsername(jwt);
@@ -105,18 +100,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return jwtCookie.map(Cookie::getValue).orElse(null);
     }
 
-    /**
-     * Détermine si le filtre ne doit pas être appliqué à certains chemins.
-     *
-     * @param request la requête HTTP servlet
-     * @return vrai si le filtre doit être ignoré, faux sinon
-     */
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getRequestURI();
-        return path.startsWith("/css/") ||
-                path.startsWith("/actuator/") ||
-                path.equals("/front/login") ||
-                path.equals("/error");
-    }
 }

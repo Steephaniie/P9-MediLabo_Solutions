@@ -1,4 +1,4 @@
-package fr.medilabo.solutions.front.util;
+package fr.medilabo.solutions.front.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
