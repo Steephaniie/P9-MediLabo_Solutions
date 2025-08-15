@@ -1,4 +1,4 @@
-package fr.medilabo.solutions.patient.util;
+package fr.medilabo.solutions.patient.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -97,33 +97,6 @@ public class JwtUtil {
         return extractExpiration(token).before(new Date());
     }
 
-    /**
-     * Generates a JWT token for a given user.
-     * 
-     * @param userDetails the user details
-     * @return String the generated JWT token
-     */
-    public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails.getUsername());
-    }
-
-    /**
-     * Creates a JWT token with the specified claims and subject.
-     * 
-     * @param claims  the claims to include in the token
-     * @param subject the subject of the token
-     * @return String the created JWT token
-     */
-    private String createToken(Map<String, Object> claims, String subject) {
-        return Jwts.builder()
-                .claims(claims)
-                .subject(subject)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSigningKey())
-                .compact();
-    }
 
     /**
      * Validates a JWT token by checking only its format and expiration.

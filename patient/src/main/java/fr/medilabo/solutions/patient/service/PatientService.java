@@ -1,18 +1,15 @@
 package fr.medilabo.solutions.patient.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
 import fr.medilabo.solutions.patient.dto.PatientDto;
 import fr.medilabo.solutions.patient.exception.ResourceNotFoundException;
 import fr.medilabo.solutions.patient.mapper.PatientMapper;
 import fr.medilabo.solutions.patient.model.Patient;
 import fr.medilabo.solutions.patient.repository.PatientRepository;
+import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**

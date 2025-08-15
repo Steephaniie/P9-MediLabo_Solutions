@@ -1,6 +1,5 @@
 package fr.medilabo.solutions.patient.security;
 
-import fr.medilabo.solutions.patient.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;

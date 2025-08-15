@@ -1,10 +1,9 @@
 package fr.medilabo.solutions.patient.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-
 import fr.medilabo.solutions.patient.dto.PatientDto;
 import fr.medilabo.solutions.patient.model.Patient;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface PatientMapper {
