@@ -33,7 +33,7 @@ public class Patient {
     @Column(name = "address", nullable = true, length = 255)
     private String address;
 
-    @Column(name = "phone_number", nullable = true, length = 15)
+    @Column(name = "phone_number", nullable = true, length = 14)
     private String phoneNumber;
 
     // Timestamp

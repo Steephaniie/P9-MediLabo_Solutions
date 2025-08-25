@@ -1,5 +1,6 @@
 package fr.medilabo.solutions.patient.exception;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,16 +27,11 @@ public class GlobalExceptionHandler {
     }
 
     @Data
+    @AllArgsConstructor
     public static class ErrorResponse {
         private int status;
         private String error;
         private String message;
-
-        public ErrorResponse(int status, String error, String message) {
-            this.status = status;
-            this.error = error;
-            this.message = message;
-        }
     }
 
 }

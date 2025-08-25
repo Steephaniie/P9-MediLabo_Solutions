@@ -1,0 +1,72 @@
+services:
+
+  eureka:
+    image: eureka:v1
+    ports:
+      - "9761:8761"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_URL: http://eureka:8761/eureka
+      APP_GATEWAY_URL: http://localhost:9080
+
+  gateway:
+    image: gateway:v1
+    ports:
+      - "9080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_URL: http://eureka:8761/eureka
+      APP_GATEWAY_URL: http://localhost:9080
+    depends_on:
+      - eureka
+
+  patient:
+    image: patient:v1
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_URL: http://eureka:8761/eureka
+      APP_GATEWAY_URL: http://localhost:9080
+    depends_on:
+      - eureka
+
+  front:
+    image: front:v1
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_URL: http://eureka:8761/eureka
+      APP_GATEWAY_URL: http://localhost:9080
+    depends_on:
+      - eureka
+
+  note:
+    image: note:v1
+    environment:
+      EUREKA_URL: http://eureka:8761/eureka
+      APP_GATEWAY_URL: http://localhost:9080
+      MONGO_URL: mongodb://stef:stef@mongo:27017/P9?authSource=admin
+      SPRING_DATA_MONGODB_URI: mongodb://stef:stef@mongo:27017/P9?authSource=admin
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - mongo
+      - eureka
+
+  rapport:
+    image: rapport:v1
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_URL: http://eureka:8761/eureka
+      APP_GATEWAY_URL: http://localhost:9080
+    depends_on:
+      - eureka
+
+  mongo:
+    image: mongo:7
+    ports:
+      - "27018:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=stef
+      - MONGO_INITDB_ROOT_PASSWORD=stef
+    volumes:
+      - ./note/data:/docker-entrypoint-initdb.d:ro
+      - ./mongodb/data/db:/data/db
+

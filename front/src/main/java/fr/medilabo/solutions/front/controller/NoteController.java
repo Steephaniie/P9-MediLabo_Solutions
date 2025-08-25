@@ -2,7 +2,9 @@ package fr.medilabo.solutions.front.controller;
 
 import fr.medilabo.solutions.front.client.NoteServiceClient;
 import fr.medilabo.solutions.front.client.PatientServiceClient;
+import fr.medilabo.solutions.front.client.RapportPatientServiceClient;
 import fr.medilabo.solutions.front.config.UrlConfiguration;
+import fr.medilabo.solutions.front.dto.DiabeteNiveauRisqueEnum;
 import fr.medilabo.solutions.front.dto.NoteDto;
 import fr.medilabo.solutions.front.dto.PatientDto;
 import jakarta.validation.Valid;
@@ -27,6 +29,7 @@ public class NoteController {
     private final NoteServiceClient noteServiceClient;
     private final PatientServiceClient patientServiceClient;
     private final UrlConfiguration urlConfiguration;
+    private final RapportPatientServiceClient rapportPatientServiceClient;
 
     /**
      * Retrieves and displays patient notes along with patient information and risk
@@ -59,6 +62,9 @@ public class NoteController {
             List<NoteDto> notes = noteServiceClient.getNoteByPatientId(patientId.intValue());
             model.addAttribute("notes", notes);
 
+            DiabeteNiveauRisqueEnum niveauRisque = rapportPatientServiceClient.getRapportByIdPatient(patientId);
+            model.addAttribute("niveauRisque", niveauRisque.name());
+
             NoteDto newNote = new NoteDto();
             newNote.setPatId(patientId.intValue());
             model.addAttribute("newNote", newNote);
@@ -68,6 +74,8 @@ public class NoteController {
         } catch (Exception e) {
             logger.error("Error retrieving patient notes for ID {}: {}", patientId, e.getMessage());
             model.addAttribute("error", "Erreur lors de la récupération des données du patient");
+            // Assurer le binding Thymeleaf même en cas d'erreur
+            model.addAttribute("newNote", new NoteDto());
         }
 
         return "patientNote";
@@ -114,9 +122,8 @@ public class NoteController {
 
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("noteError", "Veuillez corriger les erreurs dans le formulaire");
-            return "redirect:" +urlConfiguration.getUrlSitePublic()+"/notes/" + patientId;
+            return "redirect:" +urlConfiguration.getUrlSitePublic()+"/note/" + patientId;
         }
-
         try {
             PatientDto patient = patientServiceClient.getPatientById(patientId);
 

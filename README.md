@@ -6,12 +6,12 @@ Projet de développement Java Spring Boot permettant aux praticiens de consulter
 ##  Architecture 
 ### Microservices
 L'application est organisée en **microservices** :
-- 'patient-service' : gestion des informations personnelles (BDD relationnelle-SQL)
-- 'notes-services' : gestion des observations des médecins (BDD NoSQL - MongoDB)
-- 'assessment-service' : calcul du niveau de risque de diabète
-- 'gateway-service': microservice de roulage basé sur Spring cloud gateway
-- 'front-service' : application web front-end minimale et sobre
-Chaque microservice est **indépendant, dockérisé**, et communique via le **gateway**. 
+- 'gateway' : microservice de routage basé sur Spring cloud gateway
+- 'front'   : application web front-end minimale et sobre
+- 'patient' : gestion des informations personnelles (BDD relationnelle-SQL)
+- 'note'    : gestion des observations des médecins (BDD NoSQL - MongoDB)
+- 'rapport' : calcul du niveau de risque de diabète
+Chaque microservice est **indépendant, dockérisé**, et communique entre eux. 
 
 ###  Structure du projet 
 
@@ -35,15 +35,15 @@ Chaque microservice est **indépendant, dockérisé**, et communique via le **ga
 
 
 ### Bases de Données 
-- MySQL (patients) - normalisation 3NF
+- H2 (patients)
 - MongoDB (notes)
 
 ### Déploiement
 - Docker + Docker-compose
 
 
-##  Fonctionnalités par Sprint
-###  Sprint 1 : gestion des patients 
+##  Fonctionnalités attendues
+###  Sprint 1 : microservices gestion des patients 
 - consultation des patients
 - ajout d'un patient
 - modification d'un patient
@@ -54,17 +54,54 @@ Chaque microservice est **indépendant, dockérisé**, et communique via le **ga
 - Authentification basique sécurisée via Spring Sécurity
 - Première version de l'interface utilisateur (liste + fiche patient)
 
-###  Sprint 2 : notes médicales (MongoDB)
+###  Sprint 2 : microservice notes médicales (MongoDB)
+- ajout de notes libres à chaque patient
+- consultation de l'historique des notes
+- conservation du format d'écriture
+- exportation des notes
+- BDD NoSQL MongoDB
+
+###  Sprint 3 : microservice évaluation du risque 
+- analyse des notes à la recherche de termes déclencheurs
+- calcul du niveau de risque selon l'âge, le sexe, et le nombre de déclencheurs
+- affichage du niveau de risque dans la fiche patient 
+
+###  Front-end 
+- Affichage liste des patients
+- affichage détaillée : données personnelles, notes, risque
+- interface simple et intuitive
+
+###  Gateway
+- routage des requêtes vers les microservices backend
+- centralisation de la sécurité (authentification)
+
+###  Post Sprint  : dockerisation et Green code
+- Dockerisation chaque microservice (dockerfile individuel)
+- créer un docker-compose.yml global (avec services backend, frontend, gateway, BDD SQL/MAngoDB)
+- Recherche personnelle et résumé ci-dessous
 
 
-###  Sprint 3 : évaluation du risque 
+##  Installation et lancement avec l'application Docker
 
+### 1. Prérequis 
+- Docker : https://www.docker.com/
+- Docker-compose : https://docs.docker.com/compose/install/
 
-##  Installation et lancement
+### 2. cloner le repository 
+git clone https://github.com/Steephaniie/P9-MediLabo_Solutions
+cd nom-du-repo
+
+### 3. lancer tous les services
+docker-compose up --build
 
 
 ##  Microservices exposés
-
+- Gateway : http://localhost:8080/
+- Patient : http://localhost:8081/
+- Front : http://localhost:8082/
+- Notes : http://localhost:8083/
+- Rapport : http://localhost:8084/
+- Eureka : http://localhost:8761/
 
 ##  Sécurité - Authentification 
 
@@ -73,10 +110,23 @@ Chaque microservice est **indépendant, dockérisé**, et communique via le **ga
 
 
 ##  Green code - éco-conception 
+##  Enjeux
+ Le Green code vise à réduire l'empreinte écologique du code en optimisant : 
+- la consommation mémoire 
+- les cycles CPU
+- Le volume de données échangées
+
+##  Bonnes pratiques appliquées
+- microservices découplés : chargement limité à ce qui est nécessaire 
+- utilisation de DTO : uniquement les données utiles transitent entre les microservices 
+- 
+- dockerisation propre : image légères     
+
+##  Pistes d'amélioration 
+-
 
 
 
-
-
-##  Auteure
-Stéphanie Leulliette — Développeuse Java Back-End
+##  Auteure 
+Developpé dans le cadre du projet P9 de la formation developpeur Java - openclasserooms
+auteur : Stéphanie Leulliette — Développeuse Java Back-End

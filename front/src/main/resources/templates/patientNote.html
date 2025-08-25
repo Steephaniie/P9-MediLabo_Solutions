@@ -133,5 +133,33 @@
         </form>
       </div>
     </div>
+    <!-- Niveau de Risque -->
+    <div class="w-75 mx-auto mb-4">
+        <h2 class="mb-3">Niveau de Risque Diabétique</h2>
+        <div class="table-responsive">
+            <table class="table">
+                <tr>
+                    <th width="30%">Évaluation actuelle</th>
+                    <td
+                            th:with="cleanRiskLevel=${niveauRisque != null ? #strings.replace(#strings.replace(#strings.replace(riskLevel, '[', ''), ']', ''), '&quot;', '') : ''}"
+                    >
+                        <th:block th:switch="${niveauRisque}">
+                            <span th:case="'NONE'" class="badge bg-success">Aucun risque</span>
+                            <span th:case="'BORDERLINE'" class="badge bg-warning text-dark"
+                            >Risque limité</span
+                            >
+                            <span th:case="'IN_DANGER'" class="badge bg-danger"
+                            >Danger</span
+                            >
+                            <span th:case="'EARLY_ONSET'" class="badge bg-dark"
+                            >Apparition précoce</span
+                            >
+                            <span th:case="*" class="badge bg-secondary">Non évalué</span>
+                        </th:block>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
   </body>
 </html>

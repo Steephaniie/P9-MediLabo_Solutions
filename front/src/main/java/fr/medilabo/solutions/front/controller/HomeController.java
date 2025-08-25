@@ -5,9 +5,7 @@ import fr.medilabo.solutions.front.dto.PatientDto;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,10 +17,7 @@ import java.util.List;
 public class HomeController {
 
     private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
-
     private final PatientServiceClient patientServiceClient;
-
-    private final CacheManager cacheManager;
 
     /**
      * Gère les requêtes GET vers l'endpoint "/home" et affiche une liste paginée

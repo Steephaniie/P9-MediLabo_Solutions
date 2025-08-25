@@ -17,9 +17,8 @@ public interface CrudService<T> {
      *
      * @param Object l'entité à mettre à jour
      * @return l'entité mise à jour
-     * @throws Exception si l'opération de mise à jour n'est pas supportée
      */
-    public default T create(T Object) throws Exception {
+    default T create(T Object) {
         throw new UnsupportedOperationException("Create operation not supported");
     }
 
@@ -29,7 +28,7 @@ public interface CrudService<T> {
      * @return une liste de toutes les entités
      * @throws Exception si l'opération de récupération n'est pas supportée
      */
-    public default List<T> findAll() {
+    default List<T> findAll() {
         throw new UnsupportedOperationException("Find all operation not supported");
     }
 
@@ -40,7 +39,7 @@ public interface CrudService<T> {
      * @return l'entité avec l'identifiant spécifié
      * @throws Exception si l'opération de récupération n'est pas supportée
      */
-    public default T findById(int id) {
+    default T findById(int id) {
         throw new UnsupportedOperationException("Find by ID operation not supported");
     }
 
@@ -51,7 +50,7 @@ public interface CrudService<T> {
      * @return the created entity
      * @throws Exception if the create operation is not supported
      */
-    public default T update(T Object) {
+    default T update(T Object) {
         throw new UnsupportedOperationException("Update operation not supported");
     }
 
@@ -61,7 +60,7 @@ public interface CrudService<T> {
      * @param Object l'entité à supprimer
      * @throws Exception si l'opération de suppression n'est pas supportée
      */
-    public default void delete(T Object) {
+    default void delete(T Object) {
         throw new UnsupportedOperationException("Delete operation not supported");
     }
 

@@ -40,7 +40,12 @@ public class JwtCookieFeignInterceptor implements RequestInterceptor {
         // on recupère la requete HTTP actuelle
         HttpServletRequest request = attrs.getRequest();
         // on identifie le cookie jwt
-        for (Cookie c : request.getCookies()) {
+        Cookie[] cookies = (request != null) ? request.getCookies() : null;
+        if (cookies == null) {
+            // Aucun cookie présent: ne rien faire
+            return;
+        }
+        for (Cookie c : cookies) {
             if (COOKIE_NAME.equals(c.getName())) {
                 // on transfert le cookie jwt dans la requete Feign
                 String newCookie = COOKIE_NAME + '=' + c.getValue();

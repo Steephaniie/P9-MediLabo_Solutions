@@ -1,6 +1,6 @@
-use('medilabosolutions_note');
+use('P9');
 
-db.notes.insertMany([
+db.note.insertMany([
   {
     "patId": 1,
     "patient": "TestNone",

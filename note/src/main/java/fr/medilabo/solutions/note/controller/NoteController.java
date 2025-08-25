@@ -3,7 +3,7 @@ package fr.medilabo.solutions.note.controller;
 import fr.medilabo.solutions.note.dto.NoteDto;
 import fr.medilabo.solutions.note.service.NoteService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,10 +24,10 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/note")
+@RequiredArgsConstructor
 public class NoteController {
 
-    @Autowired
-    private NoteService noteService;
+    private final NoteService noteService;
 
     /**
      * Retrieves all notes for a specific patient.

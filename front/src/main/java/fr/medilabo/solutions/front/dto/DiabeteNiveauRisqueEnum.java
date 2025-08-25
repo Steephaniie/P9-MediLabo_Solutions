@@ -1,6 +1,6 @@
 package fr.medilabo.solutions.front.dto;
 
-public enum DiabetesRiskLevelEnum {
+public enum DiabeteNiveauRisqueEnum {
     NONE("None"),
     BORDERLINE("Borderline"),
     IN_DANGER("InDanger"),
@@ -8,7 +8,7 @@ public enum DiabetesRiskLevelEnum {
 
     private final String description;
 
-    DiabetesRiskLevelEnum(String description) {
+    DiabeteNiveauRisqueEnum(String description) {
         this.description = description;
     }
 

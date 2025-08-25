@@ -1,37 +1,34 @@
 package fr.medilabo.solutions.patient.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.medilabo.solutions.patient.dto.PatientDto;
+import fr.medilabo.solutions.patient.exception.GlobalExceptionHandler;
+import fr.medilabo.solutions.patient.exception.ResourceNotFoundException;
+import fr.medilabo.solutions.patient.security.JwtAuthenticationFilter;
+import fr.medilabo.solutions.patient.security.JwtUtil;
+import fr.medilabo.solutions.patient.service.PatientService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.medilabo.solutions.patient.dto.PatientDto;
-import fr.medilabo.solutions.patient.exception.ResourceNotFoundException;
-import fr.medilabo.solutions.patient.service.PatientService;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Classe de tests pour PatientController.
@@ -39,36 +36,28 @@ import fr.medilabo.solutions.patient.service.PatientService;
  * pour la gestion des patients.
  */
 @WebMvcTest(PatientController.class)
+@Import({GlobalExceptionHandler.class})
+@AutoConfigureMockMvc(addFilters = false)
+@ActiveProfiles("test")
 @DisplayName("Patient Controller Tests")
 class PatientControllerTest {
 
-    /**
-     * Mock MVC pour simuler les requêtes HTTP
-     */
+    @MockBean
+    private JwtUtil jwtUtil;
+
+    @MockBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
     @Autowired
     private MockMvc mockMvc;
+    @MockBean
 
-    /**
-     * Service mocké pour la gestion des patients
-     */
-    @MockitoBean
     private PatientService patientService;
-
-    /**
-     * Mapper pour la conversion des objets en JSON et vice-versa
-     */
     @Autowired
     private ObjectMapper objectMapper;
-
-    /**
-     * DTO patient utilisé pour les tests
-     */
     private PatientDto patientDto;
-
-    /**
-     * Liste de DTOs patients utilisée pour les tests
-     */
     private List<PatientDto> listePatients;
+
 
     /**
      * Initialise les données de test avant chaque test.
@@ -105,6 +94,7 @@ class PatientControllerTest {
      */
     @Test
     @DisplayName("Devrait retourner tous les patients")
+//    @WithMockUser(roles = "USER")
     void obtenirTousLesPatients_DevraitRetournerTousLesPatients() throws Exception {
         // Étant donné
         when(patientService.findAll()).thenReturn(listePatients);
@@ -155,8 +145,8 @@ class PatientControllerTest {
         when(patientService.findById(999)).thenThrow(new ResourceNotFoundException("Patient not found with id: 999"));
 
         // When & Then
-        mockMvc.perform(get("/api/patient/999"))
-                .andExpect(status().isNotFound())
+        ResultActions retour = mockMvc.perform(get("/api/patient/999"));
+                retour.andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.error").value("Patient introuvable"))
                 .andExpect(jsonPath("$.message").value("Patient not found with id: 999"));

@@ -30,7 +30,7 @@ public class PatientDto {
     @Size(max = 255, message = "L'adresse ne peut pas dépasser 255 caractères")
     private String address;
 
-    @Pattern(regexp = "^(\\+33|0)[1-9]([0-9]{8})$", message = "Le numéro de téléphone doit être au format français valide")
+    @Size(max = 14, message = "Le numéro de téléphone doit être au format français valide")
     private String phoneNumber;
 
 }

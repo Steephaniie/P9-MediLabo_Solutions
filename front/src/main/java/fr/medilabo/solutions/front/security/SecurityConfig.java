@@ -1,8 +1,7 @@
 package fr.medilabo.solutions.front.security;
 
 import fr.medilabo.solutions.front.config.UrlConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -40,13 +39,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Autowired
-    private UnauthorizedAccessHandler unauthorizedAccessHandler;
+    private final UnauthorizedAccessHandler unauthorizedAccessHandler;
 
     /**
      * Configuration principale de la chaîne de filtres de sécurité.
@@ -59,14 +57,15 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, UrlConfiguration urlConfiguration) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/login").permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers("/login", "/actuator/**").permitAll() // Accès public
+                        .anyRequest().authenticated())// Toutes les autres requêtes doivent être authentifiées
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl(urlConfiguration.getUrlSitePublic()+"/login?logout") // Redirection après déconnexion
-                        .deleteCookies("jwt"))
+                        .logoutUrl("/logout")// URL de déconnexion personnalisée
+                        .logoutSuccessUrl(urlConfiguration.getUrlSitePublic()+"/login?logout")// Redirection après déconnexion
+                        .deleteCookies("jwt")) //suppression du cookie  JWT
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(unauthorizedAccessHandler))
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(unauthorizedAccessHandler))
                 .csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
