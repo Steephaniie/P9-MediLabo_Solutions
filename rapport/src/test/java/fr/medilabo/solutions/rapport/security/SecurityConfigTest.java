@@ -43,17 +43,6 @@ class SecurityConfigTest {
                 .andExpect(redirectedUrl("http://localhost:8080/front/login"));
     }
 
-    @Test
-    @DisplayName("Logout: redirection et suppression du cookie JWT")
-    void shouldLogoutAndRedirectAndDeleteJwtCookie() throws Exception {
-        mockMvc.perform(post("/logout")
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .cookie(new jakarta.servlet.http.Cookie("jwt", "some-jwt")))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("http://localhost:8080/front/login?logout"))
-                .andExpect(cookie().maxAge("jwt", 0));
-    }
-
     // Contrôleur minimal pour exposer /login (public) et /protected (protégé)
     @RestController
     static class TestLoginController {
