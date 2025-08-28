@@ -164,6 +164,8 @@ Données de test fournies dans le projet (4 patients types + notes médicales) p
 ##  Améliorations possibles
 - Utilisation des profiles Spring Boot pour limiter la consommation en dev/test (suppression des logs)
 - Caching des appels aux microservices (mémorisation des précédentes réponses)
+- Réduction du trafic réseau (DTO - réduire la taille des champs)
+
 
 ##  Auteure 
 Projet réalisé dans le cadre du P9 de la formation Développeur Java - openclassrooms
