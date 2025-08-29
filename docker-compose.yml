@@ -7,7 +7,6 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       EUREKA_URL: http://eureka:8761/eureka
-      APP_GATEWAY_URL: http://localhost:9080
 
   gateway:
     image: gateway:v1
@@ -16,7 +15,6 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       EUREKA_URL: http://eureka:8761/eureka
-      APP_GATEWAY_URL: http://localhost:9080
     depends_on:
       - eureka
 
