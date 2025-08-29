@@ -27,28 +27,62 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * Tests unitaires pour le NoteController utilisant Spring MVC Test.
+ * Cette classe vérifie le comportement des points d'entrée REST liés aux notes des patients.
+ * Les filtres de sécurité sont désactivés pour se concentrer sur la logique métier.
+ */
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 @WebMvcTest(NoteController.class)
 @DisplayName("NoteController - Tests Web MVC")
 class NoteControllerTest {
+    /**
+     * Mock du service d'authentification JWT
+     */
     @MockBean
     private JwtUtil jwtUtil;
 
+    /**
+     * Mock de la configuration des URLs
+     */
     @MockBean
     private UrlConfiguration urlConfiguration;
+
+    /**
+     * Client MockMvc pour simuler les requêtes HTTP
+     */
     @Autowired
     private MockMvc mockMvc;
 
+    /**
+     * Mock du client service pour les notes
+     */
     @MockBean
     private NoteServiceClient noteServiceClient;
 
+    /**
+     * Mock du client service pour les patients
+     */
     @MockBean
     private PatientServiceClient patientServiceClient;
 
+    /**
+     * Mock du client service pour les rapports patients
+     */
     @MockBean
     private RapportPatientServiceClient rapportPatientServiceClient;
 
+    /**
+     * Teste la récupération des notes d'un patient avec succès.
+     * Vérifie que la vue retournée contient :
+     * - Les informations du patient
+     * - La liste des notes associées
+     * - Le niveau de risque calculé
+     * - Un objet note vide pour la création
+     *
+     * @throws Exception en cas d'erreur lors de l'exécution du test
+     */
     @Test
     @DisplayName("GET /note/{id} - succès: vue patientNote avec patient, notes, niveauRisque et newNote")
     void getPatientNote_shouldReturnViewWithModel_onSuccess() throws Exception {
@@ -86,6 +120,12 @@ class NoteControllerTest {
                 .andExpect(model().attribute("newNote", hasProperty("patId", is(patientId))));
     }
 
+    /**
+     * Teste le comportement en cas d'erreur lors de la récupération des notes.
+     * Vérifie que la vue affiche un message d'erreur approprié.
+     *
+     * @throws Exception en cas d'erreur lors de l'exécution du test
+     */
     @Test
     @DisplayName("GET /note/{id} - erreur: vue patientNote avec attribut error")
     void getPatientNote_shouldReturnError_onFailure() throws Exception {
@@ -101,6 +141,15 @@ class NoteControllerTest {
                 .andExpect(model().attribute("error", containsString("Erreur")));
     }
 
+    /**
+     * Teste l'ajout d'une nouvelle note avec succès.
+     * Vérifie que :
+     * - La note est créée correctement
+     * - La redirection est effectuée vers la bonne URL
+     * - Un message de succès est ajouté aux attributs flash
+     *
+     * @throws Exception en cas d'erreur lors de l'exécution du test
+     */
     @Test
     @DisplayName("POST /note/{id} - succès: ajoute la note et redirige avec flash 'success'")
     void addNote_shouldRedirectWithSuccess_onValidData() throws Exception {
@@ -122,6 +171,14 @@ class NoteControllerTest {
                 .andExpect(flash().attribute("success", containsString("Note ajoutée avec succès")));
     }
 
+    /**
+     * Teste le comportement en cas d'erreur lors de l'ajout d'une note.
+     * Vérifie que :
+     * - La redirection est effectuée
+     * - Un message d'erreur approprié est ajouté aux attributs flash
+     *
+     * @throws Exception en cas d'erreur lors de l'exécution du test
+     */
     @Test
     @DisplayName("POST /note/{id} - erreur service: redirige avec flash 'noteError'")
     void addNote_shouldRedirectWithError_onServiceFailure() throws Exception {

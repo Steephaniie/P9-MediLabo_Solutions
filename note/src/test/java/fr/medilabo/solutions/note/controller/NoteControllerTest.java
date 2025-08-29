@@ -26,6 +26,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Tests unitaires pour le contrôleur de notes.
+ * Cette classe teste les différentes fonctionnalités du contrôleur REST
+ * permettant la gestion des notes des patients.
+ */
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 @WebMvcTest(NoteController.class)
@@ -48,9 +53,13 @@ class NoteControllerTest {
     private NoteDto noteDto2;
     private List<NoteDto> noteList;
 
+    /**
+     * Configuration initiale avant chaque test.
+     * Prépare les objets DTO de notes utilisés dans les tests.
+     */
     @BeforeEach
     void setUp() {
-        // Setup premier note
+        // Configuration de la première note
         noteDto1 = new NoteDto();
         noteDto1.setId("64a7b8c9d1e2f3g4h5i6j7k8");
         noteDto1.setPatId(1);
@@ -58,7 +67,7 @@ class NoteControllerTest {
         noteDto1.setNote(
                 "Le patient déclare qu'il 'se sent très bien' Poids égal ou inférieur au poids recommandé");
 
-        // Setup deuxième note
+        // Configuration de la deuxième note
         noteDto2 = new NoteDto();
         noteDto2.setId("64a7b8c9d1e2f3g4h5i6j7k9");
         noteDto2.setPatId(1);
@@ -68,14 +77,18 @@ class NoteControllerTest {
         noteList = Arrays.asList(noteDto1, noteDto2);
     }
 
+    /**
+     * Teste la récupération de toutes les notes d'un patient.
+     * Vérifie que les notes sont correctement retournées pour un ID patient valide.
+     */
     @Test
-    @DisplayName("Should return all notes for a patient")
+    @DisplayName("Devrait retourner toutes les notes d'un patient")
     void getNoteByPatientId_WithValidPatientId_ShouldReturnNotes() throws Exception {
-        // Given
+        // Étant donné
         int patientId = 1;
         when(noteService.getNotesByPatientId(patientId)).thenReturn(noteList);
 
-        // When & Then
+        // Quand & Alors
         mockMvc.perform(get("/api/note/{patId}", patientId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -321,10 +334,10 @@ class NoteControllerTest {
     @Test
     @DisplayName("Should handle malformed JSON in request body")
     void createNote_WithMalformedJson_ShouldReturn400() throws Exception {
-        // Given
+        // Étant donné
         String malformedJson = "{\"patId\": 1, \"note\": \"test\", invalid}";
 
-        // When & Then
+        // Quand & Alors
         mockMvc.perform(post("/api/note")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(malformedJson))

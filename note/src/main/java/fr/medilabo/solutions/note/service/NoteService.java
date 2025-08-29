@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Service class for managing patient medical notes.
- * This service provides functionality for retrieving, creating, and deleting
- * notes associated with patients.
+ * Classe de service pour la gestion des notes médicales des patients.
+ * Ce service fournit des fonctionnalités pour récupérer, créer et supprimer
+ * les notes associées aux patients.
  * 
  * @author LEULLIETTE Stéphanie
  * @version 1.0
@@ -30,14 +30,14 @@ public class NoteService {
     private static final Logger log = LoggerFactory.getLogger(NoteService.class);
 
     /**
-     * Retrieves all notes associated with a specific patient.
-     * 
-     * @param patientId The unique identifier of the patient whose notes are to be
-     *                  retrieved
-     * @return A list of NoteDto objects representing the patient's notes
+     * Récupère toutes les notes associées à un patient spécifique.
+     *
+     * @param patientId L'identifiant unique du patient dont les notes doivent être
+     *                  récupérées
+     * @return Une liste d'objets NoteDto représentant les notes du patient
      */
     public List<NoteDto> getNotesByPatientId(int patientId) {
-        log.debug("Retrieving notes for patient with ID: " + patientId);
+        log.debug("Récupération des notes pour le patient avec l'ID : " + patientId);
         List<Note> notes = noteRepository.findByPatId((Integer) patientId);
         List<NoteDto> noteDtos = new ArrayList<>();
         for (Note note : notes) {
@@ -48,15 +48,15 @@ public class NoteService {
     }
 
     /**
-     * Creates a new Note entry using the provided DTO.
+     * Crée une nouvelle entrée Note en utilisant le DTO fourni.
      * <p>
-     * This method converts the NoteDto to a Note entity, saves it to the database,
-     * and returns the newly created note as a DTO.
-     * 
-     * @param noteDto the Data Transfer Object containing the note information to be
-     *                saved
-     * @return the Data Transfer Object representing the newly created note with
-     *         generated ID
+     * Cette méthode convertit le NoteDto en entité Note, l'enregistre dans la base de données,
+     * et retourne la note nouvellement créée sous forme de DTO.
+     *
+     * @param noteDto l'objet de transfert de données contenant les informations de la note à
+     *                sauvegarder
+     * @return l'objet de transfert de données représentant la note nouvellement créée avec
+     *         l'ID généré
      */
     public NoteDto create(NoteDto noteDto) {
         Note note = noteMapper.toEntity(noteDto);
@@ -65,16 +65,16 @@ public class NoteService {
     }
 
     /**
-     * Deletes a note by its ID.
+     * Supprime une note par son ID.
      *
-     * @param noteId the ID of the note to be deleted
+     * @param noteId l'ID de la note à supprimer
      */
     public void delete(String noteId) {
         try {
-            log.debug("Attempting to delete note with ID: " + noteId);
+            log.debug("Tentative de suppression de la note avec l'ID : " + noteId);
             noteRepository.deleteById(noteId);
         } catch (Exception e) {
-            log.error(noteId + " not found for deletion.");
+            log.error(noteId + " non trouvée pour la suppression.");
             throw new ResourceNotFoundException("Note with ID " + noteId + " not found for deletion.");
         }
 

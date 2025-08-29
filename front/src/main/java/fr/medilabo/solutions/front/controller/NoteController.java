@@ -32,26 +32,26 @@ public class NoteController {
     private final RapportPatientServiceClient rapportPatientServiceClient;
 
     /**
-     * Retrieves and displays patient notes along with patient information and risk
-     * assessment.
-     * 
-     * This method fetches comprehensive patient data including:
-     * - Patient details by ID
-     * - All notes associated with the patient
-     * - Risk assessment level for the patient
-     * 
-     * It also prepares a new empty note object for potential note creation.
-     * In case of any error during data retrieval, an error message is added to the
-     * model.
-     * 
-     * @param patientId the unique identifier of the patient whose notes are to be
-     *                  retrieved
-     * @param model     the Spring MVC model to which attributes are added for view
-     *                  rendering
-     * @return the name of the view template ("notes") to be rendered
-     * 
-     * @throws Exception if there's an error during patient data retrieval from
-     *                   gateway services
+     * Récupère et affiche les notes du patient avec ses informations et l'évaluation
+     * du risque.
+     *
+     * Cette méthode récupère les données complètes du patient incluant :
+     * - Les détails du patient par ID
+     * - Toutes les notes associées au patient
+     * - Le niveau d'évaluation du risque pour le patient
+     *
+     * Elle prépare également un nouvel objet note vide pour une potentielle création.
+     * En cas d'erreur lors de la récupération des données, un message d'erreur est 
+     * ajouté au modèle.
+     *
+     * @param patientId l'identifiant unique du patient dont les notes doivent être
+     *                  récupérées
+     * @param model     le modèle Spring MVC auquel les attributs sont ajoutés pour
+     *                  le rendu de la vue
+     * @return le nom du template de vue ("notes") à afficher
+     *
+     * @throws Exception si une erreur survient pendant la récupération des données
+     *                   depuis les services gateway
      */
     @GetMapping("{id}")
     public String getPatientNote(@PathVariable("id") Long patientId, Model model) {
@@ -82,37 +82,38 @@ public class NoteController {
     }
 
     /**
-     * Adds a new note for a specific patient.
-     * 
-     * This method handles the POST request to create a new note associated with a
+     * Ajoute une nouvelle note pour un patient spécifique.
+     *
+     * Cette méthode gère la requête POST pour créer une nouvelle note associée à un
      * patient.
-     * It validates the note data, retrieves patient information to set the patient
-     * name,
-     * and saves the note through the gateway service client.
-     * 
-     * @param patientId          the unique identifier of the patient for whom the
-     *                           note is being added
-     * @param noteDto            the note data transfer object containing the note
-     *                           information to be saved
-     * @param bindingResult      the result of the validation process for the
+     * Elle valide les données de la note, récupère les informations du patient pour
+     * définir son nom,
+     * et sauvegarde la note via le client service gateway.
+     *
+     * @param patientId          l'identifiant unique du patient pour lequel la note
+     *                           est ajoutée
+     * @param noteDto            l'objet de transfert de données contenant les
+     *                           informations de la note à sauvegarder
+     * @param bindingResult      le résultat du processus de validation pour le
      *                           noteDto
-     * @param redirectAttributes attributes to be passed to the redirect view for
-     *                           displaying messages
-     * @return a redirect URL to the notes page for the specified patient
-     * 
-     * @throws Exception if there's an error during patient retrieval or note
-     *                   creation
-     * 
-     *                   The method performs the following operations:
-     *                   - Validates the input note data and returns with error
-     *                   message if validation fails
-     *                   - Retrieves patient information to set the patient name in
-     *                   the note
-     *                   - Sets the patient ID and clears any existing note ID for
-     *                   auto-generation
-     *                   - Creates the note through the gateway service
-     *                   - Adds success or error messages to redirect attributes
-     *                   - Logs the operation result for monitoring purposes
+     * @param redirectAttributes attributs à transmettre à la vue de redirection pour
+     *                          l'affichage des messages
+     * @return une URL de redirection vers la page des notes du patient spécifié
+     *
+     * @throws Exception si une erreur survient pendant la récupération du patient ou
+     *                   la création de la note
+     *
+     *                   La méthode effectue les opérations suivantes :
+     *                   - Valide les données de la note et retourne avec un message
+     *                   d'erreur si la validation échoue
+     *                   - Récupère les informations du patient pour définir son nom
+     *                   dans la note
+     *                   - Définit l'ID du patient et efface tout ID de note existant
+     *                   pour l'auto-génération
+     *                   - Crée la note via le service gateway
+     *                   - Ajoute des messages de succès ou d'erreur aux attributs de
+     *                   redirection
+     *                   - Enregistre le résultat de l'opération pour le suivi
      */
     @PostMapping("{id}")
     public String addNote(@PathVariable("id") Long patientId,
@@ -146,30 +147,32 @@ public class NoteController {
     }
 
     /**
-     * Updates an existing patient's information.
-     * 
-     * This endpoint handles POST requests to update patient data. It validates the
-     * input,
-     * updates the patient through the gateway service, and redirects back to the
-     * patient's
-     * notes page with appropriate success or error messages.
-     * 
-     * @param patientId          the unique identifier of the patient to update
-     * @param patientDto         the patient data transfer object containing updated
-     *                           information,
-     *                           validated with @Valid annotation
-     * @param bindingResult      the result of the validation process, contains any
-     *                           validation errors
-     * @param redirectAttributes attributes to be passed to the redirect target for
-     *                           flash messages
-     * @return redirect URL to the patient's notes page (/notes/{patientId})
-     * 
-     * @throws Exception if an error occurs during the patient update process
-     * 
-     *                   Flash attributes added:
-     *                   - "success": confirmation message when update is successful
-     *                   - "patientError": error message when validation fails or
-     *                   update operation fails
+     * Met à jour les informations d'un patient existant.
+     *
+     * Ce point d'entrée gère les requêtes POST pour mettre à jour les données du
+     * patient. Il valide les données,
+     * met à jour le patient via le service gateway, et redirige vers la page des
+     * notes du patient
+     * avec les messages de succès ou d'erreur appropriés.
+     *
+     * @param patientId          l'identifiant unique du patient à mettre à jour
+     * @param patientDto         l'objet de transfert de données contenant les
+     *                           informations mises à jour,
+     *                           validé avec l'annotation @Valid
+     * @param bindingResult      le résultat du processus de validation, contient les
+     *                           erreurs de validation
+     * @param redirectAttributes attributs à transmettre à la cible de redirection
+     *                          pour les messages flash
+     * @return URL de redirection vers la page des notes du patient (/notes/{patientId})
+     *
+     * @throws Exception si une erreur survient pendant le processus de mise à jour
+     *                   du patient
+     *
+     *                   Attributs flash ajoutés :
+     *                   - "success" : message de confirmation quand la mise à jour
+     *                   réussit
+     *                   - "patientError" : message d'erreur quand la validation
+     *                   échoue ou l'opération de mise à jour échoue
      */
     @PostMapping("{id}/update")
     public String updatePatient(@PathVariable("id") Long patientId,

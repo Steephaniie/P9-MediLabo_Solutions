@@ -10,6 +10,10 @@ import java.io.IOException;
 
 import static org.mockito.Mockito.*;
 
+/**
+ * Tests unitaires pour le gestionnaire d'accès non autorisé.
+ * Vérifie le comportement lors des tentatives d'accès non authentifiées.
+ */
 class UnauthorizedAccessHandlerTest {
 
     @Test
@@ -24,10 +28,10 @@ class UnauthorizedAccessHandlerTest {
         when(request.getMethod()).thenReturn("GET");
         when(exception.getMessage()).thenReturn("Access Denied");
 
-        // Act
+        // Exécution
         unauthorizedAccessHandler.commence(request, response, exception);
 
-        // Assert
+        // Vérification
         verify(response, times(1)).sendRedirect("null/front/login");
         verify(request, times(1)).getRequestURI();
         verify(request, times(1)).getMethod();

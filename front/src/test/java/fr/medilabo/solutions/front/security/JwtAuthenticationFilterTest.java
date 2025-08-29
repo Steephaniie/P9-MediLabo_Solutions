@@ -17,12 +17,24 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * Classe de tests pour le filtre d'authentification JWT.
+ * Cette classe vérifie le comportement du filtre dans différents scénarios
+ * d'authentification avec des tokens JWT.
+ */
 @SpringBootTest
 class JwtAuthenticationFilterTest {
 
     @MockBean
     private JwtUtil jwtUtil;
 
+    /**
+     * Teste le comportement du filtre avec un token JWT valide.
+     * Vérifie que le filtre traite correctement le token et continue la chaîne de filtres.
+     *
+     * @throws ServletException en cas d'erreur lors du filtrage
+     * @throws IOException      en cas d'erreur d'entrée/sortie
+     */
     @Test
     void testDoFilterInternal_WithValidJwt() throws ServletException, IOException {
         JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil);
@@ -46,6 +58,13 @@ class JwtAuthenticationFilterTest {
         verify(filterChain).doFilter(request, response);
     }
 
+    /**
+     * Teste le comportement du filtre avec un token JWT invalide.
+     * Vérifie que le filtre rejette le token invalide et efface le contexte de sécurité.
+     *
+     * @throws ServletException en cas d'erreur lors du filtrage
+     * @throws IOException      en cas d'erreur d'entrée/sortie
+     */
     @Test
     void testDoFilterInternal_WithInvalidJwt() throws ServletException, IOException {
         JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil);
@@ -68,6 +87,13 @@ class JwtAuthenticationFilterTest {
         assertNull(SecurityContextHolder.getContext().getAuthentication());
     }
 
+    /**
+     * Teste le comportement du filtre lorsqu'aucun cookie JWT n'est présent.
+     * Vérifie que le filtre continue la chaîne sans authentification.
+     *
+     * @throws ServletException en cas d'erreur lors du filtrage
+     * @throws IOException      en cas d'erreur d'entrée/sortie
+     */
     @Test
     void testDoFilterInternal_NoJwtCookie() throws ServletException, IOException {
         JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil);
@@ -84,6 +110,13 @@ class JwtAuthenticationFilterTest {
         assertNull(SecurityContextHolder.getContext().getAuthentication());
     }
 
+    /**
+     * Teste le comportement du filtre avec un token JWT expiré.
+     * Vérifie que le filtre rejette le token expiré et efface le contexte de sécurité.
+     *
+     * @throws ServletException en cas d'erreur lors du filtrage
+     * @throws IOException      en cas d'erreur d'entrée/sortie
+     */
     @Test
     void testDoFilterInternal_WithExpiredJwt() throws ServletException, IOException {
         JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil);

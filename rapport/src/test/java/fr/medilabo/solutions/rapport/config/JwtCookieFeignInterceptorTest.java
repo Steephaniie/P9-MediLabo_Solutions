@@ -13,12 +13,12 @@ import static org.mockito.Mockito.when;
 class JwtCookieFeignInterceptorTest {
 
     /**
-     * Tests the JwtCookieFeignInterceptor class which is responsible for adding the JWT cookie to
-     * the header of outgoing Feign client requests.
+     * Teste la classe JwtCookieFeignInterceptor qui est responsable d'ajouter le cookie JWT à
+     * l'en-tête des requêtes sortantes du client Feign.
      */
     @Test
     void testApply_whenRequestContainsJwtCookie_shouldAddCookieToHeader() {
-        // Arrange
+        // Préparation
         HttpServletRequest mockRequest = mock(HttpServletRequest.class);
         Cookie jwtCookie = new Cookie("jwt", "exampleToken");
         when(mockRequest.getCookies()).thenReturn(new Cookie[]{jwtCookie});
@@ -29,10 +29,10 @@ class JwtCookieFeignInterceptorTest {
         RequestTemplate requestTemplate = new RequestTemplate();
         JwtCookieFeignInterceptor interceptor = new JwtCookieFeignInterceptor();
 
-        // Act
+        // Exécution
         interceptor.apply(requestTemplate);
 
-        // Assert
+        // Vérification
         String expectedHeaderValue = "jwt=exampleToken";
         assert requestTemplate.headers().containsKey("Cookie");
         assert requestTemplate.headers().get("Cookie").contains(expectedHeaderValue);

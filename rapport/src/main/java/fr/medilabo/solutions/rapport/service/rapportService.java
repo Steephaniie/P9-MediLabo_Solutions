@@ -25,18 +25,17 @@ public class rapportService {
     private final NoteServiceClient noteServiceClient;
 
     /**
-     * Assesses the diabetes risk level for a given patient based on their age,
-     * gender, and medical notes.
-     * 
-     * This method retrieves patient information and medical notes, then calculates
-     * the diabetes risk
-     * by analyzing trigger terms in the notes and applying risk rapport rules
-     * based on age and gender.
-     * 
-     * @param patId the unique identifier of the patient to assess
-     * @return the calculated diabetes risk level as a DiabetesRiskLevelEnum
-     * @throws RuntimeException if patient data cannot be retrieved or if the
-     *                          patient ID is invalid
+     * Évalue le niveau de risque de diabète pour un patient donné en fonction de son âge,
+     * son genre et ses notes médicales.
+     *
+     * Cette méthode récupère les informations du patient et les notes médicales, puis calcule
+     * le risque de diabète en analysant les termes déclencheurs dans les notes et en appliquant
+     * les règles de rapport de risque basées sur l'âge et le genre.
+     *
+     * @param patId l'identifiant unique du patient à évaluer
+     * @return le niveau de risque de diabète calculé sous forme de DiabeteNiveauRisqueEnum
+     * @throws RuntimeException si les données du patient ne peuvent pas être récupérées ou si
+     *                          l'identifiant du patient est invalide
      * 
      * @see DiabeteNiveauRisqueEnum
      * @see PatientDto
@@ -66,15 +65,15 @@ public class rapportService {
     }
 
     /**
-     * Counts the number of distinct trigger terms found in the provided list of
-     * notes.
-     * 
-     * This method performs a case-insensitive search through all notes to identify
-     * trigger terms that are present. Each trigger term is counted only once,
-     * regardless of how many times it appears across all notes.
-     * 
-     * @param notes the list of note strings to search through for trigger terms
-     * @return the count of distinct trigger terms found in the notes
+     * Compte le nombre de termes déclencheurs distincts trouvés dans la liste
+     * des notes fournie.
+     *
+     * Cette méthode effectue une recherche insensible à la casse dans toutes les notes
+     * pour identifier les termes déclencheurs présents. Chaque terme déclencheur n'est
+     * compté qu'une seule fois, peu importe le nombre de fois qu'il apparaît dans les notes.
+     *
+     * @param notes la liste des notes à analyser pour les termes déclencheurs
+     * @return le nombre de termes déclencheurs distincts trouvés dans les notes
      */
     private int calculeTermesDeclencheurs(List<String> notes) {
         return (int) notes.stream()
@@ -86,30 +85,30 @@ public class rapportService {
     }
 
     /**
-     * Calculates the diabetes risk level based on patient demographics and trigger
-     * count.
-     * 
-     * The risk rapport follows different criteria based on age and gender:
-     * - For patients over 30: Risk is determined solely by trigger count
-     * - For patients 30 or under: Risk is determined by trigger count with
-     * different thresholds for males and females
-     * 
-     * Risk levels are determined as follows:
-     * - NONE: No triggers present, or trigger count doesn't meet minimum thresholds
-     * - BORDERLINE: Only applies to patients over 30 with 2-5 triggers
-     * - IN_DANGER:
-     * - Patients over 30: 6-7 triggers
-     * - Males 30 or under: 3-4 triggers
-     * - Females 30 or under: 4-6 triggers
-     * - EARLY_ONSET:
-     * - Patients over 30: 8 or more triggers
-     * - Males 30 or under: 5 or more triggers
-     * - Females 30 or under: 7 or more triggers
-     * 
-     * @param age          the patient's age in years
-     * @param isFemme      true if the patient is female
-     * @param termesDeclencheurs the number of diabetes risk factor triggers identified
-     * @return the calculated diabetes risk level as a DiabetesRiskLevelEnum
+     * Calcule le niveau de risque de diabète en fonction des données démographiques
+     * du patient et du nombre de termes déclencheurs.
+     *
+     * Le rapport de risque suit différents critères selon l'âge et le genre :
+     * - Pour les patients de plus de 30 ans : Le risque est déterminé uniquement par le nombre de déclencheurs
+     * - Pour les patients de 30 ans ou moins : Le risque est déterminé par le nombre de déclencheurs avec
+     * des seuils différents pour les hommes et les femmes
+     *
+     * Les niveaux de risque sont déterminés comme suit :
+     * - NONE : Aucun déclencheur présent ou nombre de déclencheurs insuffisant
+     * - BORDERLINE : S'applique uniquement aux patients de plus de 30 ans avec 2-5 déclencheurs
+     * - IN_DANGER :
+     * - Patients de plus de 30 ans : 6-7 déclencheurs
+     * - Hommes de 30 ans ou moins : 3-4 déclencheurs
+     * - Femmes de 30 ans ou moins : 4-6 déclencheurs
+     * - EARLY_ONSET :
+     * - Patients de plus de 30 ans : 8 déclencheurs ou plus
+     * - Hommes de 30 ans ou moins : 5 déclencheurs ou plus
+     * - Femmes de 30 ans ou moins : 7 déclencheurs ou plus
+     *
+     * @param age          l'âge du patient en années
+     * @param isFemme      vrai si le patient est une femme
+     * @param termesDeclencheurs le nombre de facteurs de risque de diabète identifiés
+     * @return le niveau de risque de diabète calculé sous forme de DiabeteNiveauRisqueEnum
      */
     private DiabeteNiveauRisqueEnum determineDiabeteNiveauRisque(int age, boolean isFemme, int termesDeclencheurs) {
         if (termesDeclencheurs == 0) {
@@ -117,28 +116,28 @@ public class rapportService {
         }
 
         if (age >= 30) {
-            // patient plus de 30 ans
-            //entre 2 et 5 termes declencheurs -> borderline
+            // Patient de plus de 30 ans
+            // Entre 2 et 5 termes déclencheurs -> Borderline
             if (termesDeclencheurs >= 2 && termesDeclencheurs <= 5) {
                 return DiabeteNiveauRisqueEnum.BORDERLINE;
-                // entre 6 et 7 termes declencheurs -> in danger
+                // Entre 6 et 7 termes déclencheurs -> En danger
             } else if (termesDeclencheurs >= 6 && termesDeclencheurs <= 7) {
                 return DiabeteNiveauRisqueEnum.IN_DANGER;
-                //plus de 7 termes declencheurs -> early onset
+                // Plus de 7 termes déclencheurs -> Apparition précoce
             } else if (termesDeclencheurs > 7) {
                 return DiabeteNiveauRisqueEnum.EARLY_ONSET;
             }
         } else {
             if (isFemme) {
-                // femme de moins de 30 ans
+                // Femme de moins de 30 ans
                 if (termesDeclencheurs >= 4 && termesDeclencheurs < 7) {
                     return DiabeteNiveauRisqueEnum.IN_DANGER;
                 } else if (termesDeclencheurs >= 7) {
                     return DiabeteNiveauRisqueEnum.EARLY_ONSET;
                 }
             } else {
-                // homme de moins de 30 ans
-                 if (termesDeclencheurs >= 3 && termesDeclencheurs <= 4) {
+                // Homme de moins de 30 ans
+                if (termesDeclencheurs >= 3 && termesDeclencheurs <= 4) {
                     return DiabeteNiveauRisqueEnum.IN_DANGER;
                 } else if (termesDeclencheurs >= 5) {
                     return DiabeteNiveauRisqueEnum.EARLY_ONSET;

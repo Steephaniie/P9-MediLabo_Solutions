@@ -24,12 +24,12 @@ class JwtUtilTest {
 //    @Mock
 //    private JwtUtil jwtUtil;
     /**
-     * Tests for the validateToken method of JwtUtil.
-     * This method checks whether a token is valid (not expired).
+     * Tests pour la méthode validateToken de JwtUtil.
+     * Cette méthode vérifie si un token est valide (non expiré).
      */
     @Test
     void validateToken_shouldReturnTrueForValidToken() {
-        // Arrange
+        // Préparation
         SecretKey key = Keys.hmacShaKeyFor(secret.getBytes());
         String username = "testuser";
         Map<String, Object> claims = new HashMap<>();
@@ -45,7 +45,7 @@ class JwtUtilTest {
         ReflectionTestUtils.setField(jwtUtil, "expiration", expiration);
         // Act
         boolean isValid = jwtUtil.validateToken(token);
-        // Assert
+        // Vérification
         assertTrue(isValid);
     }
 //
@@ -65,7 +65,7 @@ class JwtUtilTest {
         JwtUtil jwtUtil = new JwtUtil();
         ReflectionTestUtils.setField(jwtUtil, "secret", secret);
         ReflectionTestUtils.setField(jwtUtil, "expiration", expiration);
-        // Act
+        // Exécution
         boolean isValid = jwtUtil.validateToken(token);
         // Assert
         assertFalse(isValid);

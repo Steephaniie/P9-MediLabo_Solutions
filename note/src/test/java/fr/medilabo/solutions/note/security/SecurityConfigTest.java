@@ -20,6 +20,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * Tests pour la configuration de sécurité.
+ * Vérifie le comportement des endpoints protégés et la redirection vers la page de connexion.
+ */
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @WebMvcTest(controllers = {
@@ -37,6 +41,10 @@ class SecurityConfigTest {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    /**
+     * Vérifie que l'accès aux endpoints protégés est bloqué
+     * et redirige vers la page de connexion
+     */
     @Test
     @DisplayName("Devrait bloquer l'accès aux endpoints protégés (401)")
     void shouldProtectEndpoints() throws Exception {
@@ -45,7 +53,9 @@ class SecurityConfigTest {
                 .andExpect(redirectedUrl("http://localhost:8080/front/login"));
     }
 
-    // Contrôleur minimal pour exposer /login (public) et /protected (protégé)
+    /**
+     * Contrôleur de test minimal pour exposer l'endpoint /login (public)
+     */
     @RestController
     static class TestLoginController {
         @GetMapping("/login")
@@ -54,6 +64,9 @@ class SecurityConfigTest {
         }
     }
 
+    /**
+     * Contrôleur de test minimal pour exposer l'endpoint /protected (protégé)
+     */
     @RestController
     static class TestProtectedController {
         @GetMapping("/protected")
@@ -62,8 +75,12 @@ class SecurityConfigTest {
         }
     }
 
+    /**
+     * Vérifie que le filtre JWT est invoqué et que la requête
+     * est redirigée vers la page de connexion
+     */
     @Test
-    @DisplayName("La requête doit etre rediriger vers login")
+    @DisplayName("La requête doit être redirigée vers login")
     void shouldInvokeJwtFilterOnRequest() throws Exception {
         mockMvc.perform(get("/protected"))
                 .andExpect(status().is3xxRedirection())

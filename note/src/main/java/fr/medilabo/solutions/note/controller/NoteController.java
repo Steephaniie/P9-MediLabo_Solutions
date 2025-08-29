@@ -11,16 +11,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * REST Controller for managing Note resources.
- * Provides endpoints for retrieving, creating, and deleting notes for patients.
- * 
- * Endpoints:
- * - GET /api/note/{patId}: Retrieves all notes for a specific patient
- * - POST /api/note: Creates a new note
- * - DELETE /api/note/{noteId}: Deletes a specific note by its ID
- * 
- * @see NoteService For the business logic implementation
- * @see NoteDto Data transfer object for Note entities
+ * Contrôleur REST pour la gestion des ressources Note.
+ * Fournit des points d'accès pour récupérer, créer et supprimer les notes des patients.
+ *
+ * Points d'accès:
+ * - GET /api/note/{patId}: Récupère toutes les notes d'un patient spécifique
+ * - POST /api/note: Crée une nouvelle note
+ * - DELETE /api/note/{noteId}: Supprime une note spécifique par son ID
+ *
+ * @see NoteService Pour l'implémentation de la logique métier
+ * @see NoteDto Objet de transfert de données pour les entités Note
  */
 @RestController
 @RequestMapping("/api/note")
@@ -30,11 +30,11 @@ public class NoteController {
     private final NoteService noteService;
 
     /**
-     * Retrieves all notes for a specific patient.
+     * Récupère toutes les notes pour un patient spécifique.
      *
-     * @param patId the patient identifier
-     * @return a ResponseEntity containing a list of NoteDto objects associated with
-     *         the specified patient
+     * @param patId l'identifiant du patient
+     * @return un ResponseEntity contenant une liste d'objets NoteDto associés au
+     *         patient spécifié
      */
     @GetMapping("/{patId}")
     public ResponseEntity<List<NoteDto>> getNoteByPatientId(@PathVariable int patId) {
@@ -43,12 +43,12 @@ public class NoteController {
     }
 
     /**
-     * Creates a new note in the system.
+     * Crée une nouvelle note dans le système.
      *
-     * @param noteDto The note data transfer object containing the e information to
-     *                be created.
-     *                Must be valid according to the validation constraints.
-     * @return ResponseEntity containing the created NoteDto with HTTP status 201
+     * @param noteDto L'objet de transfert de données note contenant les informations à
+     *                créer.
+     *                Doit être valide selon les contraintes de validation.
+     * @return ResponseEntity contenant le NoteDto créé avec le statut HTTP 201
      *         (CREATED)
      */
     @PostMapping

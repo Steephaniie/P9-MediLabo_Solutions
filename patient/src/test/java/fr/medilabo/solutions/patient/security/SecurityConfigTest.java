@@ -18,6 +18,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * Tests d'intégration pour la configuration de sécurité.
+ * Vérifie le comportement des endpoints protégés et publics,
+ * ainsi que le fonctionnement du filtre JWT.
+ */
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @WebMvcTest(controllers = {
@@ -35,6 +40,10 @@ class SecurityConfigTest {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    /**
+     * Vérifie que l'accès aux endpoints protégés est bloqué
+     * et redirige vers la page de connexion
+     */
     @Test
     @DisplayName("Devrait bloquer l'accès aux endpoints protégés (401)")
     void shouldProtectEndpoints() throws Exception {
@@ -44,7 +53,10 @@ class SecurityConfigTest {
     }
 
 
-    // Contrôleur minimal pour exposer /login (public) et /protected (protégé)
+    /**
+     * Contrôleur minimal permettant d'exposer les endpoints /login (public)
+     * et /protected (protégé) pour les tests
+     */
     @RestController
     static class TestLoginController {
         @GetMapping("/login")
@@ -61,8 +73,12 @@ class SecurityConfigTest {
         }
     }
 
+    /**
+     * Vérifie que toute requête non authentifiée est bien
+     * redirigée vers la page de connexion
+     */
     @Test
-    @DisplayName("La requête doit etre rediriger vers login")
+    @DisplayName("La requête doit être redirigée vers login")
     void shouldInvokeJwtFilterOnRequest() throws Exception {
         mockMvc.perform(get("/protected"))
                 .andExpect(status().is3xxRedirection())

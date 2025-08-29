@@ -18,6 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.springframework.test.util.ReflectionTestUtils;
 
+/**
+ * Classe de tests pour JwtUtil.
+ * Cette classe vérifie les fonctionnalités de validation des tokens JWT.
+ */
 @SpringBootTest
 class JwtUtilTest {
     @Value("${jwt.secret}")
@@ -27,12 +31,12 @@ class JwtUtilTest {
 //    @Mock
 //    private JwtUtil jwtUtil;
     /**
-     * Tests for the validateToken method of JwtUtil.
-     * This method checks whether a token is valid (not expired).
+     * Test pour la méthode validateToken de JwtUtil.
+     * Cette méthode vérifie si un token valide (non expiré) est correctement validé.
      */
     @Test
     void validateToken_shouldReturnTrueForValidToken() {
-        // Arrange
+        // Préparation
         SecretKey key = Keys.hmacShaKeyFor(secret.getBytes());
         String username = "testuser";
         Map<String, Object> claims = new HashMap<>();
@@ -46,12 +50,16 @@ class JwtUtilTest {
         JwtUtil jwtUtil = new JwtUtil();
         ReflectionTestUtils.setField(jwtUtil, "secret", secret);
         ReflectionTestUtils.setField(jwtUtil, "expiration", expiration);
-        // Act
+        // Exécution
         boolean isValid = jwtUtil.validateToken(token);
-        // Assert
+        // Vérification
         assertTrue(isValid);
     }
 //
+
+    /**
+     * Test pour vérifier qu'un token expiré est correctement rejeté.
+     */
     @Test
     void validateToken_shouldReturnFalseForExpiredToken() {
         // Arrange
@@ -74,6 +82,10 @@ class JwtUtilTest {
         assertFalse(isValid);
     }
 //
+
+    /**
+     * Test pour vérifier qu'un token mal formé est correctement rejeté.
+     */
     @Test
     void validateToken_shouldReturnFalseForMalformedToken() {
         // Arrange

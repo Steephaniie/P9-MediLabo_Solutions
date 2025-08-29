@@ -10,8 +10,15 @@ import java.io.IOException;
 
 import static org.mockito.Mockito.*;
 
+/**
+ * Tests pour la classe UnauthorizedAccessHandler qui gère les accès non autorisés.
+ */
 class UnauthorizedAccessHandlerTest {
 
+    /**
+     * Teste si la méthode commence redirige correctement vers la page de connexion
+     * en cas d'accès non autorisé.
+     */
     @Test
     void testCommence_RedirectsToLogin() throws IOException {
 
@@ -24,10 +31,10 @@ class UnauthorizedAccessHandlerTest {
         when(request.getMethod()).thenReturn("GET");
         when(exception.getMessage()).thenReturn("Access Denied");
 
-        // Act
+        // Exécution
         unauthorizedAccessHandler.commence(request, response, exception);
 
-        // Assert
+        // Vérification
         verify(response, times(1)).sendRedirect("null/front/login");
         verify(request, times(1)).getRequestURI();
         verify(request, times(1)).getMethod();

@@ -21,14 +21,14 @@ public class rapportController {
     private final rapportService rapportService;
 
     /**
-     * Retrieves the diabetes risk rapport for a specific patient.
-     * 
-     * @param patId the unique identifier of the patient for whom to assess diabetes
-     *              risk
-     * @return ResponseEntity containing the DiabetesRiskLevelEnum representing the
-     *         patient's diabetes risk level
-     * @throws IllegalArgumentException if the patient ID is invalid or patient not
-     *                                  found
+     * Récupère le rapport de risque de diabète pour un patient spécifique.
+     *
+     * @param patId l'identifiant unique du patient pour lequel évaluer le risque
+     *              de diabète
+     * @return ResponseEntity contenant le DiabetesRiskLevelEnum représentant le
+     *         niveau de risque de diabète du patient
+     * @throws IllegalArgumentException si l'ID du patient est invalide ou si le patient
+     *                                  n'est pas trouvé
      */
     @GetMapping("/{patId}")
     public ResponseEntity<DiabeteNiveauRisqueEnum> getrapport(@PathVariable Long patId) {

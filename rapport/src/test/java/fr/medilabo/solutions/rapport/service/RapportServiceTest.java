@@ -1,3 +1,6 @@
+/**
+ * Tests pour le service de rapport qui évalue le risque de diabète des patients.
+ */
 package fr.medilabo.solutions.rapport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -62,7 +65,7 @@ public class RapportServiceTest {
     }
 
     @Nested
-    @DisplayName("Risk rapport for Patients Over 30")
+    @DisplayName("Rapport de risque pour les patients de plus de 30 ans")
     class PatientsOver30Tests {
 
         @Test
@@ -150,7 +153,7 @@ public class RapportServiceTest {
     }
 
     @Nested
-    @DisplayName("Risk rapport for Young Males (30 or under)")
+    @DisplayName("Rapport de risque pour les jeunes hommes (30 ans ou moins)")
     class YoungMalesTests {
 
         @Test
@@ -189,7 +192,7 @@ public class RapportServiceTest {
             // When
             DiabeteNiveauRisqueEnum result = rapportService.assessDiabetesRisk(patientId);
 
-            // Then
+            // Alors
             assertEquals(DiabeteNiveauRisqueEnum.IN_DANGER, result);
         }
 
@@ -215,13 +218,13 @@ public class RapportServiceTest {
     }
 
     @Nested
-    @DisplayName("Risk rapport for Young Females (30 or under)")
+    @DisplayName("Rapport de risque pour les jeunes femmes (30 ans ou moins)")
     class YoungFemalesTests {
 
         @Test
         @DisplayName("Should return NONE when less than 4 triggers - Young Female")
         void assessDiabetesRisk_YoungFemaleWithFewTriggers_ShouldReturnNone() {
-            // Given
+            // Étant donné
             int patientId = 8;
             PatientDto patient = createPatient(8, "Emma", "Young", LocalDate.now().minusYears(22), "F");
             List<NoteDto> notes = Arrays.asList(
@@ -253,7 +256,7 @@ public class RapportServiceTest {
             when(patientServiceClient.getPatientById(9)).thenReturn(patient);
             when(noteServiceClient.getNoteByPatientId(patientId)).thenReturn(notes);
 
-            // When
+            // Quand
             DiabeteNiveauRisqueEnum result = rapportService.assessDiabetesRisk(patientId);
 
             // Then
@@ -283,7 +286,7 @@ public class RapportServiceTest {
     }
 
     @Nested
-    @DisplayName("Trigger Terms Detection Tests")
+    @DisplayName("Tests de détection des termes déclencheurs")
     class TriggerTermsTests {
 
         @Test
@@ -356,7 +359,7 @@ public class RapportServiceTest {
     }
 
     @Nested
-    @DisplayName("Edge Cases and Error Handling")
+    @DisplayName("Cas limites et gestion des erreurs")
     class EdgeCasesTests {
 
         @Test
@@ -477,7 +480,7 @@ public class RapportServiceTest {
     }
 
     @Nested
-    @DisplayName("Service Integration Tests")
+    @DisplayName("Tests d'intégration du service")
     class IntegrationTests {
 
         @Test
@@ -535,7 +538,7 @@ public class RapportServiceTest {
     }
 
     @Nested
-    @DisplayName("Boundary Value Tests")
+    @DisplayName("Tests des valeurs limites")
     class BoundaryValueTests {
 
         @Test

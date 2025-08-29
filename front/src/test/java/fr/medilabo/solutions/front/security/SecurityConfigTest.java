@@ -25,6 +25,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * Tests unitaires pour la configuration de sécurité de l'application.
+ * Cette classe vérifie le bon fonctionnement des mécanismes d'authentification,
+ * d'autorisation et de gestion des sessions JWT.
+ */
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @WebMvcTest(controllers = {
@@ -42,6 +47,10 @@ class SecurityConfigTest {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    /**
+     * Vérifie que l'accès aux endpoints protégés est bien bloqué
+     * et redirige vers la page de login pour les utilisateurs non authentifiés.
+     */
     @Test
     @DisplayName("Devrait bloquer l'accès aux endpoints protégés (401)")
     void shouldProtectEndpoints() throws Exception {
@@ -50,6 +59,12 @@ class SecurityConfigTest {
                 .andExpect(redirectedUrl("http://localhost/login"));
     }
 
+    /**
+     * Vérifie que le processus de déconnexion :
+     * - Redirige correctement vers la page de login
+     * - Supprime le cookie JWT
+     * - Invalide la session
+     */
     @Test
     @DisplayName("Logout: redirection et suppression du cookie JWT")
     void shouldLogoutAndRedirectAndDeleteJwtCookie() throws Exception {
@@ -61,7 +76,10 @@ class SecurityConfigTest {
                 .andExpect(cookie().maxAge("jwt", 0));
     }
 
-    // Contrôleur minimal pour exposer /login (public) et /protected (protégé)
+    /**
+     * Contrôleur de test simulant les endpoints d'authentification.
+     * Expose l'endpoint public /login pour les tests.
+     */
     @RestController
     static class TestLoginController {
         @GetMapping("/login")
@@ -70,6 +88,10 @@ class SecurityConfigTest {
         }
     }
 
+    /**
+     * Contrôleur de test simulant un endpoint protégé.
+     * Utilisé pour vérifier les mécanismes de sécurité.
+     */
     @RestController
     static class TestProtectedController {
         @GetMapping("/protected")
@@ -78,6 +100,10 @@ class SecurityConfigTest {
         }
     }
 
+    /**
+     * Vérifie que toute requête non authentifiée vers un endpoint protégé
+     * est bien interceptée et redirigée vers la page de login.
+     */
     @Test
     @DisplayName("La requête doit etre rediriger vers login")
     void shouldInvokeJwtFilterOnRequest() throws Exception {
@@ -86,6 +112,10 @@ class SecurityConfigTest {
                 .andExpect(redirectedUrl("http://localhost/login"));
     }
 
+    /**
+     * Configuration de test fournissant les beans nécessaires
+     * pour simuler l'environnement de sécurité.
+     */
     @TestConfiguration
     static class TestBeans {
 

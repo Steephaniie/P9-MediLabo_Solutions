@@ -24,6 +24,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * Tests d'intégration pour le contrôleur PatientController.
+ * Ces tests vérifient le comportement des endpoints REST et la logique de navigation
+ * en utilisant MockMvc pour simuler les requêtes HTTP.
+ */
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 @WebMvcTest(PatientController.class)
@@ -41,6 +46,10 @@ class PatientControllerTest {
     @MockBean
     private UrlConfiguration urlConfiguration;
 
+    /**
+     * Teste l'affichage du formulaire de création d'un nouveau patient.
+     * Vérifie que la vue 'patient' est retournée avec les bons attributs du modèle.
+     */
     @Test
     @DisplayName("GET /patient/new - doit afficher la vue 'patient' en mode création")
     void showNewPatientForm_shouldReturnPatientView() throws Exception {
@@ -52,9 +61,14 @@ class PatientControllerTest {
                 .andExpect(model().attribute("pageTitle", is("Nouveau Patient")));
     }
 
+    /**
+     * Teste l'affichage du formulaire d'édition d'un patient existant.
+     * Vérifie le comportement en cas de succès avec un patient trouvé.
+     */
     @Test
     @DisplayName("GET /patient/{id}/edit - succès: vue 'patient' en mode édition")
     void showEditPatientForm_shouldReturnPatientView_onSuccess() throws Exception {
+        // Préparation des données de test
         long patientId = 12L;
         PatientDto patient = new PatientDto();
         patient.setId((int) patientId);
@@ -126,9 +140,15 @@ class PatientControllerTest {
                 .andExpect(flash().attribute("success", containsString("mis à jour")));
     }
 
+    /**
+     * Teste la validation du formulaire de sauvegarde d'un patient.
+     * Vérifie que les erreurs de validation sont correctement gérées et que l'utilisateur
+     * reste sur le formulaire avec les messages d'erreur appropriés.
+     */
     @Test
     @DisplayName("POST /patient/save - erreurs de validation: reste sur la vue 'patient' avec isEdit/pageTitle cohérents")
     void savePatient_shouldStayOnForm_onValidationErrors() throws Exception {
+        // Configuration du test avec des données invalides
         // id=0 -> création; firstname vide pour déclencher la validation
         mockMvc.perform(post("/patient/save")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)

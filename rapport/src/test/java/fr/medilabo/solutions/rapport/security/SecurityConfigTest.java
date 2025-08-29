@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         SecurityConfigTest.TestProtectedController.class
 })
 @Import({SecurityConfig.class,UnauthorizedAccessHandler.class})
-@DisplayName("SecurityConfig Tests")
+@DisplayName("Tests de SecurityConfig")
 class SecurityConfigTest {
     @MockBean
     private JwtUtil jwtUtil;
@@ -36,14 +36,16 @@ class SecurityConfigTest {
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Test
-    @DisplayName("Devrait bloquer l'accès aux endpoints protégés (401)")
+    @DisplayName("Doit bloquer l'accès aux endpoints protégés sans authentification")
     void shouldProtectEndpoints() throws Exception {
         mockMvc.perform(get("/protected"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("http://localhost:8080/front/login"));
     }
 
-    // Contrôleur minimal pour exposer /login (public) et /protected (protégé)
+    /**
+     * Contrôleur minimal pour exposer /login (public) et /protected (protégé)
+     */
     @RestController
     static class TestLoginController {
         @GetMapping("/login")
@@ -61,7 +63,7 @@ class SecurityConfigTest {
     }
 
     @Test
-    @DisplayName("La requête doit etre rediriger vers login")
+    @DisplayName("La requête doit être redirigée vers la page de connexion")
     void shouldInvokeJwtFilterOnRequest() throws Exception {
         mockMvc.perform(get("/protected"))
                 .andExpect(status().is3xxRedirection())

@@ -21,7 +21,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 @WebMvcTest(rapportController.class)
-@DisplayName("rapport Controller Tests")
+/**
+ * Tests du contrôleur de rapport.
+ * Vérifie le comportement des endpoints pour l'évaluation des risques de diabète.
+ */
+@DisplayName("Tests du Contrôleur de Rapport")
 public class rapportControllerTest {
     @MockBean
     private JwtUtil jwtUtil;
@@ -37,14 +41,14 @@ public class rapportControllerTest {
     }
 
     @Test
-    @DisplayName("Should return NONE risk level for patient")
+    @DisplayName("Devrait retourner un niveau de risque NONE pour le patient")
     void getrapport_WithPatientHavingNoRisk_ShouldReturnNone() throws Exception {
-        // Given
+        // Étant donné
         Long patientId = 1L;
         when(rapportService.assessDiabetesRisk(patientId.intValue()))
                 .thenReturn(DiabeteNiveauRisqueEnum.NONE);
 
-        // When & Then
+        // Quand & Alors
         mockMvc.perform(get("/api/rapport/{patId}", patientId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -54,14 +58,14 @@ public class rapportControllerTest {
     }
 
     @Test
-    @DisplayName("Should return BORDERLINE risk level for patient")
+    @DisplayName("Devrait retourner un niveau de risque BORDERLINE pour le patient")
     void getrapport_WithPatientHavingBorderlineRisk_ShouldReturnBorderline() throws Exception {
-        // Given
+        // Étant donné
         Long patientId = 2L;
         when(rapportService.assessDiabetesRisk(patientId.intValue()))
                 .thenReturn(DiabeteNiveauRisqueEnum.BORDERLINE);
 
-        // When & Then
+        // Quand & Alors
         mockMvc.perform(get("/api/rapport/{patId}", patientId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -71,14 +75,14 @@ public class rapportControllerTest {
     }
 
     @Test
-    @DisplayName("Should return IN_DANGER risk level for patient")
+    @DisplayName("Devrait retourner un niveau de risque IN_DANGER pour le patient")
     void getrapport_WithPatientInDanger_ShouldReturnInDanger() throws Exception {
-        // Given
+        // Étant donné
         Long patientId = 3L;
         when(rapportService.assessDiabetesRisk(patientId.intValue()))
                 .thenReturn(DiabeteNiveauRisqueEnum.IN_DANGER);
 
-        // When & Then
+        // Quand & Alors
         mockMvc.perform(get("/api/rapport/{patId}", patientId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -88,14 +92,14 @@ public class rapportControllerTest {
     }
 
     @Test
-    @DisplayName("Should return EARLY_ONSET risk level for patient")
+    @DisplayName("Devrait retourner un niveau de risque EARLY_ONSET pour le patient")
     void getrapport_WithPatientHavingEarlyOnset_ShouldReturnEarlyOnset() throws Exception {
-        // Given
+        // Étant donné
         Long patientId = 4L;
         when(rapportService.assessDiabetesRisk(patientId.intValue()))
                 .thenReturn(DiabeteNiveauRisqueEnum.EARLY_ONSET);
 
-        // When & Then
+        // Quand & Alors
         mockMvc.perform(get("/api/rapport/{patId}", patientId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
