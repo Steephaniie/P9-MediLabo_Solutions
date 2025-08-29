@@ -20,7 +20,7 @@ public class HomeController {
     private final PatientServiceClient patientServiceClient;
 
     /**
-     * Gère les requêtes GET vers l'endpoint "/home" et affiche une liste paginée
+     * Gère les requêtes GET vers l'endpoint "/home" et affiche une liste
      * de patients.
      *
      * Cette méthode récupère les patients depuis le service gateway
